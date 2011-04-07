@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <stream>
+    <server name="RTMP Server" descr="RTMP server url">
+      rtmp://79.125.6.101/arbo
+    </server>
+    <frame_quality name="Frame Quality" descr="Picture quality, values range from 1 to 100">100</frame_quality>
+  </stream>
+</config>

@@ -1,0 +1,152 @@
+/**
+ * @file
+ *
+ * Markup of the widget.
+ */
+
+* {
+  outline: none;
+}
+
+#arbo_widget {
+  height: 600px;
+  width: 550px;
+}
+
+#arbo_widget_response {
+  display: none;
+}
+
+#arbo_widget, #arbo_widget_response {
+  background-color: #FFF;
+  border: 1px solid black;
+  display: none;
+  padding: 10px;
+}
+
+h1#arbo_review {
+  text-align: center;
+}
+
+#arbo_widget .stepContainer {
+  margin: 0 auto;
+  height: 485px;
+  width: 500px;
+}
+
+#arbo_widget p {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+p.close {
+  text-align: right !important;
+  margin-bottom: 5px;
+}
+
+#arbo_widget #progress .previous {
+  cursor: pointer;
+}
+
+#arbo_widget #progress .previous, #arbo_widget #progress .current {
+  color: #000000;
+}
+
+#arbo_widget #progress .current {
+  padding: 0.24em 1em;
+  text-align: center;
+  text-decoration: none;
+  width: 5.5em;
+  border-color: black;
+  background: none repeat scroll 0 0 white;
+  color: black;
+  font-weight: bold;
+  position: relative;
+  top: 1px;
+}
+
+#arbo_widget #progress a {
+  border-color: #BBBBBB;
+  border-style: solid;
+  border-width: 1px 1px 0;
+  float: left;
+  margin: 0;
+  background: none repeat scroll 0 0 #EEEEEE;
+  color: #0000CC;
+  display: block;
+  padding: 0.24em 1.21em;
+  text-align: center;
+  text-decoration: none;
+  width: 5.5em;
+  height: 25px;
+}
+
+#arbo_widget #progress a.future {
+  color: #d6d6d6;
+}
+
+#arbo_widget .clear {
+  clear : both;
+  height : 0;
+}
+
+#arbo_widget .left {
+  float: left;
+}
+
+#arbo_widget .right {
+  float: right;
+}
+
+#arbo_widget input {
+  border: 1px solid #000000;
+  padding: 5px;
+}
+
+#arbo_widget input#accept {
+  border: none;
+}
+
+#arbo_widget .record_controls {
+  margin: 0 auto;
+  width: 32px;
+}
+
+#arbo_widget button {
+  border: 1px solid black;
+}
+
+#arbo_widget textarea {
+  height: 250px;
+  width: 100%;
+}
+
+div.loading {
+  margin: 0 auto;
+  width: 200px;
+}
+
+div#movie_info, #arbo_widget h1.step_title {
+  display: none;
+}
+
+#arbo_widget #email {
+  width: 400px;
+}
+
+#arbo_widget h2 {
+  font-size: 20px;
+  line-height: 20px;
+  margin-bottom: 5px;
+}
+
+#arbo_widget .recordTagHighlight {
+  margin-bottom: 15px;
+}
+
+div.flash {
+  height: 385px;
+  width: 500px;
+}
