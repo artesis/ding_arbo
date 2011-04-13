@@ -13,15 +13,8 @@
   width: 550px;
 }
 
-#arbo_widget_response {
-  display: none;
-}
-
-#arbo_widget, #arbo_widget_response {
-  background-color: #FFF;
-  border: 1px solid black;
-  display: none;
-  padding: 10px;
+.ui-widget {
+  width: auto !important;
 }
 
 h1#arbo_review {
@@ -58,7 +51,7 @@ p.close {
   padding: 0.24em 1em;
   text-align: center;
   text-decoration: none;
-  width: 5.5em;
+  width: 5.1em;
   border-color: black;
   background: none repeat scroll 0 0 white;
   color: black;
@@ -79,7 +72,7 @@ p.close {
   padding: 0.24em 1.21em;
   text-align: center;
   text-decoration: none;
-  width: 5.5em;
+  width: 5.1em;
   height: 25px;
 }
 
@@ -149,4 +142,12 @@ div#movie_info, #arbo_widget h1.step_title {
 div.flash {
   height: 385px;
   width: 500px;
+}
+
+#arbo_review a {
+  width: 676px !important;
+}
+
+#arbo_review .ajax-progress {
+  display: none;
 }

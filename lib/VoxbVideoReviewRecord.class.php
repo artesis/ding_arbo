@@ -50,7 +50,7 @@ class VoxbVideoReviewRecord extends VoxbBase{
    * @param string $review - link to youtube video file
    * @param integer $userId
    */
-  public function create($isbn, $review, $userId) {
+  public function create($faust, $review, $userId) {
     $response = $this->call('createMyData', array(
       'userId' => $userId,
       'item' => array(
@@ -61,12 +61,12 @@ class VoxbVideoReviewRecord extends VoxbBase{
         )
       ),
       'object' => array(
-        'objectIdentifierValue' => $isbn,
-        'objectIdentifierType' => 'ISBN'
+        'objectIdentifierValue' => $faust,
+        'objectIdentifierType' => 'FAUST'
       )
     ));
 
-    if (!$response || $response->error) {
+    if (!$response || isset($response->error)) {
       return FALSE;
     }
     return TRUE;

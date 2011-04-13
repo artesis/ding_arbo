@@ -3,10 +3,13 @@
 /**
  * @file
  *
- * Display the video reviews carousel with videos stored on YT
+ * Display the video reviews carousel with videos stored on YT.
  */
 
-$reviews = $obj->getReviews('videoreview');
+$item = new VoxbItem();
+$item->addReviewHandler('videoreview', new VoxbVideoReviews());
+$item->fetchByFaust($faust_number);
+$reviews = $item->getReviews('videoreview');
 
 if ($reviews != NULL && $reviews->getCount() > 0) {
 
@@ -19,7 +22,15 @@ if ($reviews != NULL && $reviews->getCount() > 0) {
       <ul>
       <?php
         foreach ($reviews as $v) {
-          echo '<li><a href="'.$v->getLink().'" class="review_link"><img src="'.$v->getThumbnail().'" alt="" width="85" height="85" /></a></li>';
+        	$a = explode('v=', $v->getLink());
+          echo l(
+            '<img src="'.$v->getThumbnail().'" alt="" width="85" height="85" />',
+            'http://artesis/arbo/ajax/carousel/youtube?video=' . $a[1],
+            array(
+              'html' => TRUE,
+              'attributes' => array(
+                'class' => array(
+                  'use-ajax'))));
         }
       ?>
       </ul>
@@ -43,6 +54,7 @@ if ($reviews != NULL && $reviews->getCount() > 0) {
     });
   });';
 
+  drupal_add_js('misc/jquery.form.js');
   drupal_add_js($inline, 'inline');
 
 }

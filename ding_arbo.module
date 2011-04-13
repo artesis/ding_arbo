@@ -1,12 +1,25 @@
 <?php
+/**
+ * @file
+ */
 
 define('FLV_ADDR', 'http://localhost/index.php?file=');
 define('RESPONDER_ADDR', 'http://localhost/index.php');
 define('ARBO_PATH', drupal_get_path('module', 'ding_arbo'));
+define('TING_PATH', drupal_get_path('module', 'ting'));
+define('WIDGET_STEPS', 5);
 
 /**
- * @file
- *
+ * Implements hook_init().
+ */
+function ding_arbo_init() {
+  drupal_add_js(ARBO_PATH . '/js/arbo.js');
+  drupal_add_js(ARBO_PATH . '/js/flowplayer-3.2.6.min.js');
+  drupal_add_js(ARBO_PATH . '/js/jquery.jcarousel.lite.js');
+  drupal_add_css(ARBO_PATH . '/css/arbo-widget.css');
+}
+
+/**
  * Implements hook_menu().
  */
 function ding_arbo_menu() {
@@ -16,7 +29,7 @@ function ding_arbo_menu() {
     'title' => 'ARBO config',
     'description' => 'Configuration page for ARBO module',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('arbo_config_form'),
+    'page arguments' => array('ding_arbo_config_form'),
     'access arguments' => array('access adminitration pages'),
   );
 
@@ -29,7 +42,114 @@ function ding_arbo_menu() {
     'file' => 'ding_arbo.ajax.inc',
   );
 
+  $items['arbo/ajax/widget/%'] = array(
+    'title' => 'ARBO widget',
+    'description' => 'Display ARBO widget through ajax call in a popup overlay.',
+    'page arguments' => array(1, 3),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'page callback' => 'ding_arbo_widget_display',
+  );
+
+  $items['arbo/ajax/carousel/youtube'] = array(
+    'title' => 'ARBO review popup',
+    'description' => 'Display ARBO overlay for existing video reviews.',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'page callback' => 'ding_arbo_carousel_youtube',
+  );
+
   return $items;
+}
+
+/**
+ * Display a YT stored video review in a popup
+ *
+ * @param $type
+ *   Type of request
+ * @param $video_link
+ *   YouTube video link
+ */
+function ding_arbo_carousel_youtube($type = 'ajax') {
+  if ($type == 'ajax') {
+    if (!empty($_REQUEST['video'])) {
+      $commands = array();
+
+      $video_id = $_REQUEST['video'];
+      $commands[] = ajax_command_ding_popup(
+        'yt_overlay',
+        t('Video review'),
+        '<object width="480" height="390"><param name="movie" value="http://www.youtube.com/v/' . $video_id . '?fs=1&amp;hl=en_US&amp;rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/' . $video_id . '?fs=1&amp;hl=en_US&amp;rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="390"></embed></object>'
+      );
+
+      $result = array('#type' => 'ajax', '#commands' => $commands);
+
+      ajax_deliver($result);
+    }
+  }
+}
+
+/**
+ * Handles ARBO widget display.
+ *
+ * @param $type
+ *   Type of request
+ * @param $faust_number
+ *   Item faust number
+ */
+function ding_arbo_widget_display($type = 'ajax', $faust_number) {
+  if ($type == 'ajax') {
+    require_once DRUPAL_ROOT . '/' . TING_PATH . '/ting.client.inc';
+
+    // Include needed classes
+    require_once DRUPAL_ROOT . '/' . ARBO_PATH . '/lib/VoxbVideoReviews.class.php';
+    require_once DRUPAL_ROOT . '/' . VOXB_PATH . '/lib/VoxbItem.class.php';
+    require_once DRUPAL_ROOT . '/' . VOXB_PATH . '/lib/VoxbProfile.class.php';
+
+    $item = new VoxbItem();
+    $item->fetchByFaust($faust_number);
+    $profile = new VoxbProfile();
+    $profile->setUserId($_SESSION['voxb']['userId']);
+
+    $video_filename = md5(REQUEST_TIME);
+
+    $commands = array();
+    $commands[] = ajax_command_ding_popup(
+      'arbo_widget',
+      t('ARBO Widget'),
+      theme('arbo_widget', array(
+        'voxb_item' => $item,
+        'profile' => $profile,
+        'faust_number' => $faust_number,
+        'video_filename' => $video_filename))
+    );
+
+    $commands[] = ding_arbo_widget_init($video_filename);
+
+    $result = array('#type' => 'ajax', '#commands' => $commands);
+
+    // Show the widget
+    ajax_deliver($result);
+  }
+}
+
+/**
+ * Initializes the Arbo widget with needed data
+ *
+ * @param $video_filename
+ *   Video file name hash delivered to template
+ * @return
+ *   An array of Drupal ajax calls with additional parameters
+ */
+function ding_arbo_widget_init($video_filename) {
+  return array(
+    'command' => 'ding_arbo_widget_init',
+    'arbo_path' => ARBO_PATH,
+    'movie_name' => $video_filename,
+    'app_name' => 'ARBO',
+    'stream_path' => variable_get('arbo_flv_server_addr', FLV_ADDR),
+  );
 }
 
 /**
@@ -46,11 +166,9 @@ function ding_arbo_ctools_plugin_directory($module, $plugin) {
  */
 function ding_arbo_theme() {
 
-  $review_data = array();
-
   $hooks['arbo_widget'] = array(
-    'variables' => array('data' => $review_data, 'config' => NULL),
-    'template' => 'arbo-widget'
+    'variables' => array('voxb_item' => NULL, 'profile' => NULL, 'faust_number' => NULL, 'video_filename' => NULL),
+    'template' => 'ding_arbo-widget',
   );
 
   return $hooks;
@@ -66,12 +184,19 @@ function ding_arbo_help($path, $arg) {
 }
 
 /**
- * Create and display ARBO configuration form.
+ * Arbo module config form
+ *
+ * @param $form
+ *   Processed form fields and their data
+ * @param $form_state
+ *   Form state
+ * @return
+ *   An array representing the form structure
  */
-function ding_arbo_config_form($form_state) {
-  $form['arbo_flv_server_addr'] = array(
+function ding_arbo_config_form($form, $form_state) {
+  $form['ding_arbo_flv_server_addr'] = array(
     '#type' => 'textfield',
-    '#default_value' => variable_get('arbo_flv_server_addr', FLV_ADDR),
+    '#default_value' => variable_get('ding_arbo_flv_server_addr', FLV_ADDR),
     '#title' => t('FLV address'),
     '#description' => t('Server address where FLV\'s can be accessed., e.g. http://localhost/index.php?file='),
     '#size' => 40,
@@ -81,7 +206,7 @@ function ding_arbo_config_form($form_state) {
 
   $form['ding_arbo_responder_server_addr'] = array(
     '#type' => 'textfield',
-    '#default_value' => variable_get('arbo_responder_server_addr', RESPONDER_ADDR),
+    '#default_value' => variable_get('ding_arbo_responder_server_addr', RESPONDER_ADDR),
     '#title' => t('Upload responder'),
     '#description' => t('Server address which replies a newly uploaded video YouTube unique ID, e.g. http://localhost/index.php'),
     '#size' => 40,
@@ -90,4 +215,114 @@ function ding_arbo_config_form($form_state) {
   );
 
   return system_settings_form($form);
+}
+
+/**
+ * The video reviews form, to store review data
+ *
+ * @param $form
+ *   Processed form fields and their data
+ * @param $form_state
+ *   Form state
+ * @param $faust
+ *   Item faust number
+ * @param $movie_name
+ *   Video file name hash
+ * @return
+ *   An array representing the form structure
+ */
+function ding_arbo_review_form($form, &$form_state, $faust, $movie_name) {
+  $form['terms'] = array(
+    '#type' => 'textarea',
+    '#attributes' => array(
+      'readonly' => TRUE,
+    ),
+  );
+
+  $form['accept'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('I hereby accept the terms'),
+  );
+
+  $form['object_faust'] = array(
+    '#type' => 'hidden',
+    '#value' => $faust,
+  );
+
+  $form['review_email'] = array(
+    '#type' => 'hidden',
+  );
+
+  $form['movie_name'] = array(
+    '#type' => 'hidden',
+    '#value' => $movie_name,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'submit',
+    '#ajax' => array(
+      'callback' => 'ding_arbo_review_form_callback'
+    ),
+  );
+
+  return $form;
+}
+
+/**
+ * Callback function for processing video reviews,
+ * stores ata in hidden fields and sends them to red5 for further processing
+ *
+ * @param $form
+ *   Processed form fields and their data
+ * @param $form_state
+ *   Form state
+ * @return
+ *   An array of Drupal ajax calls with additional parameters
+ */
+function ding_arbo_review_form_callback($form, &$form_state) {
+  $commands = array();
+
+  if ($form['accept']['#value'] == 1) {
+    require_once DRUPAL_ROOT . '/' . TING_PATH . '/ting.client.inc';
+    $object = ting_object_load($form['object_faust']['#value']);
+
+    $movie_title = $object->title . ' [anmeldelse]';
+    $movie_description = t('Review by') . ' ' . $object->title . '. Beskrivelse af materialet: ' . $object->abstract;
+    $movie_tags = implode(', ', $object->subjects) . ', EasyTown, ' . $object->title . ', inlead, artesis';
+    $movie_name = $form['movie_name']['#value'] . '.flv';
+    $object_id = $object->ding_entity_id;
+
+    $status = file_get_contents(
+      variable_get('ding_arbo_responder_server_addr', RESPONDER_ADDR) .
+      '?movie_name=' . urlencode($movie_name) .
+      '&review_title=' . urlencode($movie_title) .
+      '&review_description=' . urlencode($movie_description) .
+      '&review_tags=' . urlencode($movie_tags) .
+      '&user_email=' . urlencode($form['review_email']['#value']) .
+      '&faust_number=' . urlencode($form['object_faust']['#value']) .
+      '&user_id=' . urlencode($_SESSION['voxb']['userId']) .
+      '&ding_id=' . urlencode($object_id));
+
+    $commands[] = ajax_command_ding_popup_close('arbo_widget');
+
+    if ($status == '0x01') {
+      $commands[] = ajax_command_ding_popup(
+        'arbo_notice',
+        'ARBO widget',
+        '<p style="text-align: center;">Thank you for your review!</p><p style="text-align: center;"><img src="/' . ARBO_PATH . '/img/accept.png" width="128" height="128" alt="" /></p>');
+    }
+    else {
+      $commands[] = ajax_command_ding_popup(
+        'arbo_notice',
+        'ARBO widget',
+        '<p style="text-align: center;">An unexpected error happen, try again later.</p><p style="text-align: center;"><img src="/' . ARBO_PATH . '/img/repeat-128.png" width="128" height="128" alt="" /></p>');
+    }
+
+  }
+  else {
+    $commands[] = ajax_command_ding_popup('review_error', 'Error', '<p>' . t('You should accept the terms of agreement.') . '</p>');
+  }
+
+  return array('#type' => 'ajax', '#commands' => $commands);
 }

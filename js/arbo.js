@@ -1,138 +1,199 @@
-var ArboWidget = {
+(function ($) {
+  Drupal.ajax.prototype.commands['ding_arbo_widget_init'] = function (ajax, response, status) {
+    Drupal.arbo.theme_path = '/' + response.arbo_path;
+    Drupal.arbo.movie_name = response.movie_name;
+    Drupal.arbo.application_name = response.app_name;
+    Drupal.arbo.config_file = Drupal.arbo.theme_path + '/web.xml';
+    Drupal.arbo.stream_path = response.stream_path;
+ 
+    Drupal.arbo.init();
+  };
+})(jQuery);
 
-  videoName : '',
-  applicationName : 'ARBO',
-  streamServer : '',
-  configFileName : ArboConfig.themePath+'/web.xml',
-  movie_exists : false,
-  stepIndex : 0,
-  stepArray : '',
+// Flash calls this method on init
+function sendToJSOnLoad()
+{
+  getFlashMovie(Drupal.arbo.application_name).sendToASXmlName(Drupal.arbo.config_file);
+}
 
+// Getter of movie
+function getFlashMovie(movie)
+{
+  var isIE = navigator.appName.indexOf('Microsoft') != -1;
 
-  init: function(){
-    // Launch the widget on link click
-    jQuery('h1#arbo_review a').click(function() {
-      jQuery('#arbo_widget').css('height', '600px');
-      jQuery('#widget_block').show();
-      jQuery('#widget_response').html('');
-      jQuery('#widget_block input#accept').removeAttr('checked');
-      jQuery('#widget_block button#submit').removeAttr('disabled');
-      ArboWidget.movie_exists = false;
-      ArboWidget.stepIndex = 0;
-      ArboWidget.stepArray = new Array(jQuery('#step1'), jQuery('#step2'), jQuery('#step3'), jQuery('#step4'), jQuery('#step5'));
-      ArboWidget.showStep(ArboWidget.stepArray[ArboWidget.stepIndex]);
+  return (isIE) ? window[movie] : document[movie];
+}
 
-      jQuery('#arbo_widget').bPopup({
-        modalClose:false,
-        zIndex:9700,
-        follow:false
-      });
+// Send to flash specific commands
+function callToActionscript(str)
+{
+  if (str == 'record') {
+    jQuery('#stop').show();
+    jQuery('#record').hide();
+  }
+  else if (str == 'stop') {
+    jQuery('#stop').hide();
+    jQuery('#record').show();
+    jQuery('#goNext').show();
+    flowplayer('player', Drupal.arbo.theme_path+'/swf/flowplayer-3.2.7.swf');
+  }
 
-      return false;
-    });
+  getFlashMovie(Drupal.arbo.application_name).sendToActionscript(str);
+}
 
-    jQuery('#arbo_widget p.close a').click(function() {
-      jQuery('#arbo_widget').bPopup().close();
-      ArboWidget.setMovieName();
+// Flash sends the recorded length here
+function sendToJSTime(value)
+{
+  jQuery('#time').html(value);
+}
 
-      return false;
-    });
+/*
+ * This method is called by Flash
+ * Probbaly we will get errors if it will be removed
+ */
+function sendToJSVideoName(value) { }
 
-    jQuery('div.errorPopup p.close a').click(function(){
-      jQuery('div.errorPopup').bPopup().close();
+// overwrite voxb_rating_callback command to work right with ARBO popup
+Drupal.ajax.prototype.commands['voxb_rating_callback'] = function (ajax, response, status) {
+	 // update rating count
+	 jQuery('.ratingCountSpan').html('(' + response.rating_count + ')');
 
-      return false;
-    });
+	 // show thank message
+  jQuery('.ratingsContainer .ajax_message').show();
+  jQuery('.arbo-ratingsContainer .ajax_message').show();
+  
+  // unbind mouse over/out on start
+  jQuery('div.userRate').hide();
+  jQuery('div.arbo-userRate').hide();
 
-    jQuery('#yt_player p.close a').click(function(){
-      jQuery('#yt_player').bPopup().close();
+  // update rating
+	 jQuery("div.ratingStars div.rating:lt(" + response.rating + ")").removeClass('star-off').addClass('star-on');
+ 	jQuery("div.ratingStars div.rating:gt(" + (response.rating - 1) + ")").removeClass('star-on').addClass('star-off');
+ 	
+ 	jQuery("div.arbo-ratingStars div.rating:lt(" + response.rating + ")").removeClass('star-off').addClass('star-on');
+ 	jQuery("div.arbo-ratingStars div.rating:gt(" + (response.rating - 1) + ")").removeClass('star-on').addClass('star-off');
+}
 
-      return false;
-    });
+Drupal.arbo = {
+  theme_path : '',
+  movie_name : '',
+  application_name : '',
+  config_file : '',
+  stream_path : '',
+	 stepIndex : 0,
+	 stepArray : '',
+	  
+  init: function() {
+	 	jQuery('#arbo_widget div#scrubber a#player').attr('href', Drupal.arbo.stream_path + Drupal.arbo.movie_name + '.flv');
+	 	jQuery('.stepContainer').hide();
+	 	jQuery('#step1').show();
+   
+  	// Bind ratings on mouse over and out
+  	jQuery('div.arbo-userRate div.rating').mouseover(function(){
+  		jQuery("div.arbo-userRate div.rating:lt(" + (jQuery(this).index() + 1) + ")").removeClass('star-off').addClass('star-on');
+  		jQuery("div.arbo-userRate div.rating:gt(" + jQuery(this).index() + ")").removeClass('star-on').addClass('star-off');
+  	});
+  	
+  	jQuery('div.arbo-userRate div.rating').mouseleave(function() { 
+  		jQuery("div.arbo-userRate div.rating").removeClass('star-on').addClass('star-off');
+   });
 
-    jQuery('#mycarousel a.review_link').click(function() {
-      var yt_link = jQuery(this).attr('href');
-      var yt_id = yt_link.split('=');
+   // Initializes the upper tabs
+  	Drupal.arbo.stepArray = new Array(jQuery('#step1'), jQuery('#step2'), jQuery('#step3'), jQuery('#step4'), jQuery('#step5'));
+   Drupal.arbo.stepIndex = 0;
+   Drupal.arbo.showStep(Drupal.arbo.stepArray[0]);
+   Drupal.arbo.drawProgress();
 
-      jQuery('div#yt_player').children().not('p.close').remove();
-      jQuery('div#yt_player').append('<iframe title="YouTube video player" width="480" height="390" src="http://www.youtube.com/embed/'+yt_id[1]+'" frameborder="0" allowfullscreen></iframe>');
-      jQuery('div#yt_player').bPopup({zIndex: 9800});
-      return false;
-    });
+   // Handle the next tab click
+  	jQuery('#goNext').click(function() {
+       // Increase stepIndex
+      Drupal.arbo.stepIndex++;
 
-    // Submit a video review
-    jQuery('#arbo_widget button#submit').click(function() {
-      if (jQuery('input#accept:checked').length > 0) {
-        jQuery('#widget_block').hide();
-        jQuery('#arbo_widget').animate({'height':'180px'}, 500);
-        jQuery('#arbo_widget p.close').hide();
-        jQuery('#widget_response').html('<div class="loading"><img src="'+ArboConfig.themePath+'/img/loading.gif" width="200" height="100" alt="" /></div><p>Your video is beeing processed. <br />Please wait...</p>');
-        jQuery.ajax({
-          type: 'POST',
-          url: '/arbo/call',
-          data: {
-            'movie_name': jQuery('#arbo_widget p.movie_name').html()+'.flv',
-            'movie_title': jQuery('#arbo_widget p.title').html(),
-            'movie_description': jQuery('#arbo_widget p.description').html(),
-            'movie_tags': jQuery('#arbo_widget p.tags').html(),
-            'faust_number': jQuery('#arbo_widget p.ac_identifier').html(),
-            'user_email': jQuery('#arbo_widget input[name=email]').val(),
-            'object_id': jQuery('#arbo_widget p.object_id').html()
-          },
-          dataType: 'text',
-          success: function(msg) {
-            var s = '';
-            if (msg == '0x01') {
-              s = 'Thank you for your review! You may close this overlay.';
-              img = 'accept';
-            }
-            else {
-              s = 'There was a problem uploading your review. Try again soon.';
-              img = 'repeat-128';
-            }
-
-            jQuery('#arbo_widget p.close').show();
-            jQuery('#widget_response').html('<div class="request_result"><div class="loading" style="width: 128px;"><img src="'+ArboConfig.themePath+'/img/'+img+'.png" width="128" height="128" alt="" /></div><p>'+s+'</p></div>');
-          }
-        });
-        jQuery(this).attr("disabled", "disabled");
+      if (Drupal.arbo.stepIndex <= Drupal.arbo.stepArray.length-1) {
+      	Drupal.arbo.showStep(Drupal.arbo.stepArray[Drupal.arbo.stepIndex]);
       }
-      else {
-       VoxbItem.showPopup('Terms!');
-      }
-    });
-
-    jQuery('#goNext').click(function() {
-      // Increase stepIndex
-      ArboWidget.stepIndex++;
-
-      if (ArboWidget.stepIndex <= ArboWidget.stepArray.length-1)
-        ArboWidget.showStep(ArboWidget.stepArray[ArboWidget.stepIndex]);
-
       return false;
     });
 
+    // Handle the prev tab click
     jQuery('#goPrev').click(function() {
-      // Decrease stepIndex
-      ArboWidget.stepIndex--;
-
-      if (ArboWidget.stepIndex >= 0)
-        ArboWidget.showStep(ArboWidget.stepArray[ArboWidget.stepIndex]);
-
+       // Decrease stepIndex
+    	Drupal.arbo.stepIndex--;
+      if (Drupal.arbo.stepIndex >= 0) {
+      	Drupal.arbo.showStep(Drupal.arbo.stepArray[Drupal.arbo.stepIndex]);
+      }
       return false;
+    });
+
+    // Start recording
+    jQuery('a#record').click(function(){
+    	Drupal.arbo.startRecord();
+    	jQuery('#goNext').hide();
+    	return false;
+    });
+
+    // Stop recording
+    jQuery('a#stop').click(function() {
+    	callToActionscript('stop');
+    	return false;
     });
   },
 
+  startRecord: function() {
+    var seconds = 3;
+    var timer = '';
+    jQuery('#arbo_widget div.record_controls a#record').hide();
+    jQuery('#arbo_widget div.record_controls').prepend('<p style="font-size: 26px; text-align:center;">'+seconds+'</p>');
+
+    timer = setInterval(function(){
+      seconds--;
+      if (seconds == 0) {
+      	jQuery('#arbo_widget div.record_controls p').remove();
+      	clearInterval(timer);
+        callToActionscript('record');
+      }
+      jQuery('#arbo_widget div.record_controls p').html(seconds);
+    }, 1000);
+  },
+
+  // Init tab headers functionality
+  drawProgress : function () {
+    progressContainer = jQuery('#progress').empty();
+
+    // Draw each step
+    jQuery(Drupal.arbo.stepArray).each(function(i) {
+      progressClone = jQuery('#tools #progressClone').clone().removeAttr('id');
+
+      if(i < Drupal.arbo.stepIndex) {
+        progressClone.addClass('previous');
+        // Add click handler
+        progressClone.click(function() {
+          Drupal.arbo.stepIndex = i;
+          Drupal.arbo.showStep(Drupal.arbo.stepArray[i]);
+        });
+      }
+      else if(i > Drupal.arbo.stepIndex) {
+        progressClone.addClass('future');
+      }
+      if(i == Drupal.arbo.stepIndex) {
+        progressClone.addClass('current');
+      }
+
+      progressContainer.append(progressClone.html(jQuery(this).children('h1').html()));
+    });
+  },
+  
+  // Init prev/next buttons
   showStep : function(stepHandle) {
     jQuery('.stepContainer').hide();
     jQuery(stepHandle).show();
 
     // Control showing/hiding of back/next buttons
-    if (ArboWidget.stepIndex == 0) {
+    if (Drupal.arbo.stepIndex == 0) {
       jQuery('#goPrev').hide();
       jQuery('#goNext').hide();
     }
-    else if (ArboWidget.stepIndex == ArboWidget.stepArray.length-1) {
+    else if (Drupal.arbo.stepIndex == Drupal.arbo.stepArray.length-1) {
       jQuery('#goNext').hide();
     }
     else {
@@ -141,123 +202,12 @@ var ArboWidget = {
       jQuery('#goNext').show();
     }
 
-    ArboWidget.drawProgress();
-  },
-
-  drawProgress : function() {
-    progressContainer = jQuery('#progress').empty();
-
-    // Draw each step
-    jQuery(ArboWidget.stepArray).each(function(i) {
-      progressClone = jQuery('#tools #progressClone').clone().removeAttr('id');
-
-      if (i < ArboWidget.stepIndex) {
-        progressClone.addClass('previous');
-        // Add click handler
-        progressClone.click(function() {
-          ArboWidget.stepIndex = i;
-          ArboWidget.showStep(ArboWidget.stepArray[i]);
-        });
-      } else if (i > ArboWidget.stepIndex) {
-        progressClone.addClass('future');
-      }
-      if (i == ArboWidget.stepIndex) {
-        progressClone.addClass('current');
-      }
-
-      progressContainer.append(progressClone.html(jQuery(this).children('h1').html()));
-    });
-  },
-
-  setMovieName : function() {
-    var l = 16;
-    var chars = new Array(
-      'a','b','c','d','e','f',
-      'g','h','i','j','k','l',
-      'm','n','o','p','q','r',
-      's','t','u','v','w','x',
-      'y','z','0','1','2','3',
-      '4','5','6','7','8','9'
-    );
-    var hash = '';
-
-    for (i = 0; i < l; i++) {
-      hash += chars[Math.floor(Math.random() * chars.length)];
+    // Retireve the reviewer email from prev step
+    if (Drupal.arbo.stepIndex == 4) {
+      var email = jQuery('#arbo_widget input[name=email]').val();
+      jQuery('#arbo_widget input[name=review_email]').val(email);
     }
 
-    jQuery('#arbo_widget p.movie_name').html(hash);
-    jQuery('#arbo_widget div.flash param[name=FlashVars]').attr('value', 'streamFileName='+hash);
-    jQuery('#arbo_widget div.flash embed').attr('FlashVars', 'streamFileName='+hash);
-    // Initialize the player
-    jQuery('#arbo_widget div#scrubber a#player').attr('href', ArboConfig.flvPath+hash+'.flv');
-    flowplayer('player', ArboConfig.themePath+'/swf/flowplayer-3.2.7.swf');
-  },
-
-  startRecord:function() {
-    var seconds = 3;
-    var timer = '';
-    jQuery('#arbo_widget div.record_controls a#record').hide();
-    jQuery('#arbo_widget div.record_controls').prepend('<p style="font-size: 26px; text-align:center;">'+seconds+'</p>');
-
-    timer = setInterval(function(){
-      seconds--;
-
-      if (seconds == 0) {
-        clearInterval(timer);
-        callToActionscript('record');
-        jQuery('#arbo_widget div.record_controls p').remove();
-      }
-
-      jQuery('#arbo_widget div.record_controls p').html(seconds);
-    }, 1000);
+   Drupal.arbo.drawProgress();
   }
-}
-
-jQuery(document).ready(function() {
-  ArboWidget.init();
-  ArboWidget.setMovieName();
-  ArboWidget.showStep(ArboWidget.stepArray[ArboWidget.stepIndex]);
-});
-
-function sendToJSOnLoad()
-{
-  getFlashMovie(ArboWidget.applicationName).sendToASXmlName(ArboWidget.configFileName);
-}
-
-function getFlashMovie(movieName)
-{
-  var isIE = navigator.appName.indexOf('Microsoft') != -1;
-    
-  return (isIE) ? window[movieName] : document[movieName];
-}
-
-function callToActionscript(str)
-{
-  if (str == 'record') {
-    jQuery('#stop').show();
-    jQuery('#record').hide();
-    jQuery('#goNext').hide();
-    ArboWidget.movie_exists = false;
-  }
-  else if (str == 'stop') {
-    jQuery('#stop').hide();
-    jQuery('#record').show();
-    ArboWidget.movie_exists = true;
-    jQuery('#goNext').show();
-  }
-
-  getFlashMovie(ArboWidget.applicationName).sendToActionscript(str);
-}
-
-function sendToJSTime(value)
-{
-  jQuery('#time').html(value);
-}
-
-    
-function sendToJSVideoName(value)
-{
-  var matches = value.match(/^(.+\/)([^\/]+)  jQuery/);
-  ArboWidget.videoName = matches ? matches[2] : '';
-  ArboWidget.streamServer = matches ? matches[1] : '';
-}
+};

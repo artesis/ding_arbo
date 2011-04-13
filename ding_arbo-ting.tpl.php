@@ -1,12 +1,15 @@
 <div class="videoReviewsContainer">
   <h3><?php print t('Videoreviews'); ?></h3>
   <center>
-    <div class="arboContainer">
-      <?php require_once(ARBO_PATH . '/ding_arbo-widget.tpl.php'); ?>
-    </div>
-    <?php if ($user->uid != 0 && $profile->isAbleToReview($ac_identifier)) : ?>
+    <?php
+    // get faust number
+    $ac_identifier = explode('|', $object->record['ac:identifier'][''][0]);
+    $faust_number = $ac_identifier[0];
+    require_once(ARBO_PATH . '/ding_arbo-carousel.tpl.php');
+
+    if ($user->uid != 0 && $profile->isAbleToReview($faust_number)) : ?>
     <div class="addVideoReviewContainer" style="margin-top: 15px;">
-      <h1 id="arbo_review"><a href="javascript: void(0);"><input type="button" value="<?php print t('Make your own videoreview'); ?>" class="form-submit"/></a></h1>
+      <h1 id="arbo_review"><?php echo l(t('Make your own videoreview'), 'arbo/ajax/widget/' . $faust_number, array('attributes' => array('class' => array('use-ajax')))); ?></h1>
     </div>
     <?php ;endif ?>
   </center>

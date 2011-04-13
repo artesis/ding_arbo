@@ -3,7 +3,7 @@
 /**
  * @file
  *
- * ARBO widget recorder implementation
+ * ARBO widget recorder implementation.
  *
  * Displays a multi-step widget to place own video review to a specific item,
  * fetched from ting.
@@ -11,41 +11,9 @@
  * All requests are sent and processed at red5 installation.
  */
 
-// Include files
-require_once(ARBO_PATH . '/lib/VoxbVideoReviews.class.php');
-require_once(VOXB_PATH . '/lib/VoxbItem.class.php');
+if ($user->uid != 0) : ?>
 
-$ac_identifier = explode('|', $object->record['ac:identifier'][''][0]);
-$ac_identifier = $ac_identifier[0];
-
-$obj = new VoxbItem();
-$obj->addReviewHandler('videoreview', new VoxbVideoReviews());
-$obj->fetchByFaust($ac_identifier);
-
-
-$inline_js = "var ArboConfig = {
-  themePath : '/".ARBO_PATH."',
-  flvPath : '".variable_get('arbo_flv_server_addr', FLV_ADDR)."'
-}";
-
-drupal_add_js($inline_js, 'inline');
-
-if ($user->uid != 0) {
-  drupal_add_js(ARBO_PATH.'/js/arbo.js', 'file');
-  drupal_add_js(ARBO_PATH.'/js/flowplayer-3.2.6.min.js', 'file');
-}
-
-drupal_add_js(ARBO_PATH.'/js/jquery.jcarousel.lite.js', 'file');
-
-?>
-
-<style type="text/css">@import url("/<?php echo ARBO_PATH; ?>/css/arbo-widget.css");</style>
-<?php if ($user->uid != 0) : ?>
-<style type="text/css">@import url("/<?php echo ARBO_PATH; ?>/css/arbo-lightbox.css");</style>
-
-<div id="arbo_widget_response"><p class="close"><a href="javascript: void();"><img src="<?php echo ARBO_PATH; ?>/img/cancel-on.png" alt="" /></a></p></div>
 <div id="arbo_widget">
-  <p class="close"><a href="javascript: void();"><img src="/<?php echo ARBO_PATH; ?>/img/cancel-on.png" alt="" /></a></p>
   <div id="widget_block">
     <!-- This displays the current progress in the wizard -->
     <div id="progress"></div>
@@ -58,8 +26,8 @@ drupal_add_js(ARBO_PATH.'/js/jquery.jcarousel.lite.js', 'file');
       <h1 class="step_title">Optag</h1>
       <p><?php print t('Press the record button to record your review'); ?></p>
       <div class="record_controls">
-        <a href="javascript:void(0);" onClick="javascript:ArboWidget.startRecord();" id="record"><img src="/<?php echo ARBO_PATH; ?>/img/record-32.png" /></a>
-        <a href="javascript:void(0);" onClick="javascript:callToActionscript('stop');" style="display: none;" id="stop"><img src="/<?php echo ARBO_PATH; ?>/img/stop-32.png" /></a>
+        <a href="#" id="record"><img src="/<?php echo ARBO_PATH; ?>/img/record-32.png" /></a>
+        <a href="#" id="stop" style="display:none;"><img src="/<?php echo ARBO_PATH; ?>/img/stop-32.png" /></a>
       </div>
       <div class="time">
         <p id="time">00:00:00</p>
@@ -71,13 +39,13 @@ drupal_add_js(ARBO_PATH.'/js/jquery.jcarousel.lite.js', 'file');
           <param name="bgcolor" value="#869ca7" />
           <param name="allowNetworking" value="true" />
           <param name="allowScriptAccess" value="always" />
-          <param name="FlashVars" value="streamFileName=" />
+          <param name="FlashVars" value="streamFileName=<?php echo $video_filename; ?>" />
           <embed src="/<?php echo ARBO_PATH; ?>/swf/ARBO.swf" quality="best" bgcolor="#869ca7"
             width="500" height="385" name="ARBO" align="middle"
             play="true" loop="false" quality="high" allowNetworking="true"
             allowScriptAccess="always" type="application/x-shockwave-flash"
             pluginspage="http://www.adobe.com/go/getflashplayer"
-            FlashVars="streamFileName=">
+            FlashVars="streamFileName=<?php echo $video_filename; ?>">
           </embed>
         </object>
       </div>
@@ -89,7 +57,7 @@ drupal_add_js(ARBO_PATH.'/js/jquery.jcarousel.lite.js', 'file');
       <p><?php print t('Look your video through and press the green button to proceed'); ?></p> 
       <div id="scrubber">
         <a  
-         href=""
+         href="<?php echo variable_get('arbo_flv_server_addr', FLV_ADDR) . '/' . $video_filename . '.flv'; ?>"
          style="display:block;width:500px;height:350px"  
          id="player"> 
         </a>
@@ -99,31 +67,50 @@ drupal_add_js(ARBO_PATH.'/js/jquery.jcarousel.lite.js', 'file');
     </div>
     <!-- Step 3 - Tag/rate functionality -->
     <div id="step3" class="stepContainer">
-      <h1 class="step_title">Tag/Rate</h1>
-      <?php
-
-      // Tags
-      echo '<h2>Tag this item</h2><div class="recordTagHighlight">';
-      foreach ($obj->getTags() as $v) {
-       echo '<span class="tag"><a href="/search/ting/'.htmlspecialchars($v->getName()).'">'.htmlspecialchars($v->getName()).'</a></span>&nbsp;';
-      }
-      echo '</div>';
-
-      // Add tag form
-      echo '<div class="addTagContainer"><input type="text" maxlength="32" size="20" name="tag_name" />&nbsp;&nbsp;<input type="button" name="add_tag_btn" value="'.t('Add tag').'" /><img  class="ajax_anim" src="/'. VOXB_PATH . '/img/ajax-loader.gif" width="16" height="16" alt="" /><p class="ajax_message">'.t('Thank you for contributing.').'</p></div>';
-
-      // Rating
-      $rating = $obj->getRating();
-      echo '<hr />';
-      echo '<h2>Rate this item</h2><div class="addRatingContainer"><span class="ratingStars userRate">';
-      for ($i = 1; $i <= 5; $i++) {
-        echo '<img "src="/'. VOXB_PATH . '/img/star-off.png" alt="">';
-      }
-      if ($obj->getRatingCount() > 0) {
-        echo '<span class="ratingCountSpan"> (<span class="ratingVotesNumber">'.$obj->getRatingCount().'</span>) </span>';
-      }
-      echo '</span><img class="ajax_anim" src="/'. VOXB_PATH . '/img/ajax-loader.gif" width="16" height="16" alt="" /><p class="ajax_message">'.t('Thank you for contributing.').'</p></div>';
-      ?>
+      <h1 class="step_title"><?php print t('Rate/Tag'); ?></h1>
+      <h3><?php print t('Tags'); ?></h3>
+	    <div class="recordTagHighlight">
+	    <?php 
+	      foreach ($voxb_item->getTags() as $v) {
+	        echo theme('voxb_tag_record', array('tag_name' => $v->getName()));
+	      }
+	    ?>
+	    </div>
+	    <div class="clearfix">&nbsp;</div>
+	    <?php 
+	      if (($user->uid != 0 && $profile->isAbleToTag($faust_number))) {
+	        echo drupal_render(drupal_get_form('ding_voxb_tag_form', $faust_number));
+	      } 
+	    ?>
+	    <div class="clearfix">&nbsp;</div>
+		  <div class="arbo-ratingsContainer">
+		    <h3><?php print t('Ratings'); ?></h3>
+		    <div class="arbo-ratingStars">
+		      <?php 
+		        $rating = $voxb_item->getRating();
+		        $rating = intval($rating / 20);
+		        for ($i = 1; $i <= 5; $i++) {
+		          echo '<div class="rating ' . ($i <= $rating ? 'star-on' : 'star-off') . '"></div>';
+		        }
+		        if ($voxb_item->getRatingCount() > 0) {
+		          echo '<span class="ratingCountSpan">(<span class="ratingVotesNumber">' . $voxb_item->getRatingCount().'</span>)</span>';
+		        }
+		      ?>
+		    </div>
+		    <?php if ($user->uid != 0 && $profile->isAbleToRate($faust_number)) : ?>
+		      <div class="addRatingContainer">
+		        <?php print t('Please rate this object'); ?><br />
+		        <div class="arbo-userRate">
+		          <div href="/voxb/ajax/rating/<?php echo $faust_number; ?>/1" class="use-ajax rating star-off"></div>
+		          <div href="/voxb/ajax/rating/<?php echo $faust_number; ?>/2" class="use-ajax rating star-off"></div>
+		          <div href="/voxb/ajax/rating/<?php echo $faust_number; ?>/3" class="use-ajax rating star-off"></div>
+		          <div href="/voxb/ajax/rating/<?php echo $faust_number; ?>/4" class="use-ajax rating star-off"></div>
+		          <div href="/voxb/ajax/rating/<?php echo $faust_number; ?>/5" class="use-ajax rating star-off"></div>
+		        </div>
+		      </div>
+		      <p class="ajax_message"><?php echo t('Thank you for contributing.'); ?></p>
+		    <?php ;endif ?>
+		  </div>
       <div class="clear"></div>
     </div>
     <!-- Step 4 - Mail confirmation -->
@@ -136,44 +123,36 @@ drupal_add_js(ARBO_PATH.'/js/jquery.jcarousel.lite.js', 'file');
     <div id="step5" class="stepContainer">
       <h1 class="step_title"><?php print t('Send'); ?></h1>
       <p><?php print t('Please read the following terms'); ?></p>
-      <textarea readonly="readonly">Some terms placed here...</textarea>
-      <input type="checkbox" id="accept" name="accept" value="1" />
-      <span><?php print t('I hereby accept the terms'); ?></span>
-      <br />
-      <button id="submit"><?php print t('Submit'); ?></button>
+      <?php echo drupal_render(drupal_get_form('ding_arbo_review_form', $faust_number, $video_filename)); ?>
       <div class="clear"></div>
     </div>
 
     <!-- Controls -->
     <div class="controls">
-      <a href="#" id="goPrev" class="left"><img src="/<?php echo ARBO_PATH; ?>/img/rewind-32.png" /></a>
-      <a href="#" id="goNext" class="right"><img src="/<?php echo ARBO_PATH; ?>/img/next-32.png" /></a>
+      <?php
+        echo l(
+          '<img src="/'.ARBO_PATH.'/img/rewind-32.png" />',
+          'arbo/ajax/widget/step/1',
+           array(
+             'html' => TRUE,
+             'attributes' => array('class' => array('left'), 'id' => array('goPrev'))));
+      ?>
+      
+      <?php
+        echo l(
+          '<img src="/'.ARBO_PATH.'/img/next-32.png" />',
+          'arbo/ajax/widget/step/2',
+           array(
+             'html' => TRUE,
+             'attributes' => array('class' => array('right'), 'id' => array('goNext'))));
+      ?>
       <div class="clear"></div>
     </div>
     <div id="tools">
       <a id="progressClone"></a>
     </div>
     <?php ;endif ?>
-    <!-- Movie info, used by ajax -->
-    <div id="movie_info">
-      <p class="title"><?php echo $object->title.' [anmeldelse]'; ?></p>
-      <p class="description"><?php echo  t('Review by').' '.$object->title.'. Beskrivelse af materialet: '.$object->abstract.'' ?></p>
-      <p class="tags"><?php echo implode(', ', $object->subjects).', EasyTown, '.$object->title.', inlead, artesis'; ?></p>
-      <p class="movie_name"></p>
-      <p class="ac_identifier"><?php echo $ac_identifier; ?></p>
-      <p class="object_id"><?php echo $object->ding_entity_id; ?></p>
-    </div>
     <?php if ($user->uid != 0) : ?>
   </div>
-  <div id="widget_response"></div>
 </div>
 <?php ;endif ?>
-<?php
-
-// If an item has a faust number, display the video reviews carousel,
-// since video reviews are requested from voxb using this faust number.
-if (strlen($ac_identifier) > 0) {
-  require_once(ARBO_PATH . '/ding_arbo-carousel.tpl.php');
-}
-
-?>
