@@ -1,6 +1,11 @@
 ARBO module
 ==========
 
+### Version 0.3:
+
+* Enhancement: [JavaScript should be compatible with other libraries than jQuery] [js_compatibility]
+* Fix: Updated templates to meet [ding_voxb] [ding_voxb] v0.3 changes
+
 ### Version 0.2:
 
 * Fix: Made the module work with [ding_voxb] [ding_voxb] v0.2.

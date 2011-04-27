@@ -2,12 +2,10 @@ name = ARBO module
 description = Addon module to ding_voxb making users able to create video reviews.
 package = Ding! Frontend
 core = 7.x
-version = 0.2
+version = 0.3
 
-configure = admin/config/arbo
+configure = admin/config/ding/arbo
 dependencies[] = ding_voxb
-dependencies[] = ting
-dependencies[] = ting_search
 
 files[] = lib/VoxbVideoReviewRecord.class.php
 files[] = lib/VoxbVideoReviews.class.php

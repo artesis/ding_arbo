@@ -50,9 +50,18 @@ class VoxbVideoReviewRecord extends VoxbBase{
    * @param string $review - link to youtube video file
    * @param integer $userId
    */
-  public function create($faust, $review, $userId) {
+  public function create($faustNum, $review, $profile) {
+    // check if user has already reviewed this item
+    $data = $profile->getVoxbUserData($faustNum);
+    if ($data && ($data['review']['title'] == 'videoreview' || !$data['review']['title'])) {
+      // Update reviews
+      $r = $this->update($data['voxbIdentifier'], $review);
+
+      return $r;
+    }
+
     $response = $this->call('createMyData', array(
-      'userId' => $userId,
+      'userId' => $profile->getUserId(),
       'item' => array(
         'review' => array(
           'reviewTitle' => 'videoreview',
@@ -61,12 +70,30 @@ class VoxbVideoReviewRecord extends VoxbBase{
         )
       ),
       'object' => array(
-        'objectIdentifierValue' => $faust,
+        'objectIdentifierValue' => $faustNum,
         'objectIdentifierType' => 'FAUST'
       )
     ));
 
-    if (!$response || isset($response->error)) {
+    if (!$response || $response->error) {
+      return FALSE;
+    }
+    return TRUE;
+  }
+
+  private function update($voxbId, $review) {
+    $response = $this->call('updateMyData', array(
+      'voxbIdentifier' => $voxbId,
+      'item' => array(
+        'review' => array(
+          'reviewTitle' => 'videoreview',
+          'reviewData' => $review,
+          'reviewType' => 'TXT'
+        )
+      )
+    ));
+
+    if (!$response || $response->error) {
       return FALSE;
     }
     return TRUE;
