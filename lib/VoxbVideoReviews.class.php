@@ -27,9 +27,9 @@ class VoxbVideoReviews extends VoxbBase implements Iterator{
    */
   public function fetch($voxbUserItems) {
     foreach ($voxbUserItems as $v) {
-      if (!$v->review) continue;
-      if ($v->review->reviewTitle == 'videoreview') {
-        $this->items[] = new VoxbVideoReviewRecord($v->review);
+      if (!$v) continue;
+      if ($v->reviewTitle == 'videoreview') {
+        $this->items[] = new VoxbVideoReviewRecord($v);
       }
     }
   }

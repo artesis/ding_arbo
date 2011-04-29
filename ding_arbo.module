@@ -51,10 +51,10 @@ function ding_arbo_menu() {
     'page callback' => 'ding_arbo_widget_display',
   );
 
-  $items['arbo/ajax/carousel/youtube'] = array(
+  $items['arbo/ajax/carousel/youtube/%'] = array(
     'title' => 'ARBO review popup',
     'description' => 'Display ARBO overlay for existing video reviews.',
-    'page arguments' => array(1),
+    'page arguments' => array(1, 4),
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
     'page callback' => 'ding_arbo_carousel_youtube',
@@ -71,12 +71,12 @@ function ding_arbo_menu() {
  * @param $video_link
  *   YouTube video link
  */
-function ding_arbo_carousel_youtube($type = 'ajax') {
+function ding_arbo_carousel_youtube($type = 'ajax', $video = '') {
   if ($type == 'ajax') {
-    if (!empty($_REQUEST['video'])) {
+    if ($video != '') {
       $commands = array();
 
-      $video_id = $_REQUEST['video'];
+      $video_id = $video;
       $commands[] = ajax_command_ding_popup(
         'yt_overlay',
         t('Video review'),

@@ -25,7 +25,7 @@ if ($reviews != NULL && $reviews->getCount() > 0) {
         	$a = explode('v=', $v->getLink());
           echo l(
             '<img src="'.$v->getThumbnail().'" alt="" width="85" height="85" />',
-            'http://artesis/arbo/ajax/carousel/youtube?video=' . $a[1],
+            'arbo/ajax/carousel/youtube/' . $a[1],
             array(
               'html' => TRUE,
               'attributes' => array(
