@@ -1,6 +1,10 @@
 ARBO module
 ==========
 
+### Version 1.0:
+
+* Hotfixes.
+
 ### Version 0.3:
 
 * Enhancement: [JavaScript should be compatible with other libraries than jQuery] [js_compatibility]
@@ -18,3 +22,4 @@ ARBO module
 
 [ding_voxb]: https://github.com/inleadmedia/ding_voxb
 [ding_popup]: https://github.com/ding/ding_popup
+[js_compatibility]: http://drupal.org/node/224333#javascript_compatibility
