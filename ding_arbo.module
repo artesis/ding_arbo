@@ -98,10 +98,13 @@ function ding_arbo_carousel_youtube($type = 'ajax', $video = '') {
  * @param $faust_number
  *   Item faust number
  */
-function ding_arbo_widget_display($type = 'ajax', $faust_number) {
+function ding_arbo_widget_display($type = 'ajax', $ting_id) {
   if ($type == 'ajax') {
     require_once DRUPAL_ROOT . '/' . TING_PATH . '/ting.client.inc';
 
+    $t = explode(':', $ting_id);
+    $faust_number = $t[1];
+    
     // Include needed classes
     require_once DRUPAL_ROOT . '/' . ARBO_PATH . '/lib/VoxbVideoReviews.class.php';
     require_once DRUPAL_ROOT . '/' . VOXB_PATH . '/lib/VoxbItem.class.php';
@@ -122,7 +125,8 @@ function ding_arbo_widget_display($type = 'ajax', $faust_number) {
         'voxb_item' => $item,
         'profile' => $profile,
         'faust_number' => $faust_number,
-        'video_filename' => $video_filename))
+        'video_filename' => $video_filename,
+	'ting_id' => $ting_id))
     );
 
     $commands[] = ding_arbo_widget_init($video_filename);
@@ -148,7 +152,7 @@ function ding_arbo_widget_init($video_filename) {
     'arbo_path' => ARBO_PATH,
     'movie_name' => $video_filename,
     'app_name' => 'ARBO',
-    'stream_path' => variable_get('arbo_flv_server_addr', FLV_ADDR),
+    'stream_path' => variable_get('ding_arbo_flv_server_addr', FLV_ADDR),
   );
 }
 
@@ -231,7 +235,7 @@ function ding_arbo_config_form($form, $form_state) {
  * @return
  *   An array representing the form structure
  */
-function ding_arbo_review_form($form, &$form_state, $faust, $movie_name) {
+function ding_arbo_review_form($form, &$form_state, $faust, $movie_name, $ting_id) {
   $form['terms'] = array(
     '#type' => 'textarea',
     '#attributes' => array(
@@ -247,6 +251,11 @@ function ding_arbo_review_form($form, &$form_state, $faust, $movie_name) {
   $form['object_faust'] = array(
     '#type' => 'hidden',
     '#value' => $faust,
+  );
+
+   $form['object_ting_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $ting_id,
   );
 
   $form['review_email'] = array(
@@ -285,7 +294,7 @@ function ding_arbo_review_form_callback($form, &$form_state) {
 
   if ($form['accept']['#value'] == 1) {
     require_once DRUPAL_ROOT . '/' . TING_PATH . '/ting.client.inc';
-    $object = ting_object_load($form['object_faust']['#value']);
+    $object = ting_object_load($form['object_ting_id']['#value']);
 
     $movie_title = $object->title . ' [anmeldelse]';
     $movie_description = t('Review by') . ' ' . $object->title . '. Beskrivelse af materialet: ' . $object->abstract;

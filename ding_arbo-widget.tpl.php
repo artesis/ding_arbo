@@ -123,7 +123,7 @@ if ($user->uid != 0) : ?>
     <div id="step5" class="stepContainer">
       <h1 class="step_title"><?php print t('Send'); ?></h1>
       <p><?php print t('Please read the following terms'); ?></p>
-      <?php echo drupal_render(drupal_get_form('ding_arbo_review_form', $faust_number, $video_filename)); ?>
+      <?php echo drupal_render(drupal_get_form('ding_arbo_review_form', $faust_number, $video_filename, $ting_id)); ?>
       <div class="clear"></div>
     </div>
 
