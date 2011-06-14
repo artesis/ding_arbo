@@ -4,30 +4,11 @@
  * Markup of the carousel.
  */
 
-#mycarousel {
-  width: 100%; !important;
-}
-
-#mycarousel ul li {
-  float: left !important;
-  clear: none !important;
-  width: 85px !important;
-  height: 85px !important;
-}
-
-div#yt_player {
-  background-color: #FFF;
-  border: 1px solid black;
-  display: none;
-  height: 430px;
-  width: 485px;
-}
-
-#yt_player {
-  padding: 5px;
-}
-
-#yt_player p#close {
-  text-align: right;
-}
-
+#slider { height: 135px; overflow:hidden; width: 640px; margin: 0 auto;}
+#slider .viewport { float: left; width: 530px; height: 88px; overflow: hidden; position: relative; }
+#slider .buttons { display: block; margin: 30px 10px 0 0; float: left; width: 32px; height: 32px; }
+#slider .next { margin: 30px 0 0 10px; background-image: url('../img/next-32.png'); }
+#slider .prev { background-image: url('../img/prev-32.png'); }
+#slider .disable { visibility: hidden; }
+#slider .overview { list-style: none; position: absolute; padding: 0; margin: 0; left: 0; top: 0; }
+#slider .overview li{ float: left; margin: 0 20px 0 0; padding: 1px; height: 85px; border: 1px solid #dcdcdc; width: 85px;}

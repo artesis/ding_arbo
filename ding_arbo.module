@@ -15,8 +15,11 @@ define('WIDGET_STEPS', 5);
 function ding_arbo_init() {
   drupal_add_js(ARBO_PATH . '/js/arbo.js');
   drupal_add_js(ARBO_PATH . '/js/flowplayer-3.2.6.min.js');
-  drupal_add_js(ARBO_PATH . '/js/jquery.jcarousel.lite.js');
+  drupal_add_js(ARBO_PATH . '/js/tiny_carousel.js');
   drupal_add_css(ARBO_PATH . '/css/arbo-widget.css');
+  drupal_add_css(ARBO_PATH . '/css/arbo-carousel.css');
+  drupal_add_library('system', 'drupal.ajax');
+  drupal_add_library('system', 'jquery.form');
 }
 
 /**
@@ -104,7 +107,7 @@ function ding_arbo_widget_display($type = 'ajax', $ting_id) {
 
     $t = explode(':', $ting_id);
     $faust_number = $t[1];
-    
+
     // Include needed classes
     require_once DRUPAL_ROOT . '/' . ARBO_PATH . '/lib/VoxbVideoReviews.class.php';
     require_once DRUPAL_ROOT . '/' . VOXB_PATH . '/lib/VoxbItem.class.php';
@@ -126,7 +129,7 @@ function ding_arbo_widget_display($type = 'ajax', $ting_id) {
         'profile' => $profile,
         'faust_number' => $faust_number,
         'video_filename' => $video_filename,
-	'ting_id' => $ting_id))
+        'ting_id' => $ting_id))
     );
 
     $commands[] = ding_arbo_widget_init($video_filename);
@@ -202,7 +205,7 @@ function ding_arbo_config_form($form, $form_state) {
     '#type' => 'textfield',
     '#default_value' => variable_get('ding_arbo_flv_server_addr', FLV_ADDR),
     '#title' => t('FLV address'),
-    '#description' => t('Server address where FLV\'s can be accessed., e.g. http://localhost/index.php?file='),
+    '#description' => t('Server address where FLV\'s can be accessed., e.g. http://79.125.6.101/arbo-youtube/streamer.php?file='),
     '#size' => 40,
     '#maxlength' => '256',
     '#required' => TRUE,
@@ -212,7 +215,7 @@ function ding_arbo_config_form($form, $form_state) {
     '#type' => 'textfield',
     '#default_value' => variable_get('ding_arbo_responder_server_addr', RESPONDER_ADDR),
     '#title' => t('Upload responder'),
-    '#description' => t('Server address which replies a newly uploaded video YouTube unique ID, e.g. http://localhost/index.php'),
+    '#description' => t('Server address which replies a newly uploaded video YouTube unique ID, e.g. http://79.125.6.101/arbo-youtube/index.php'),
     '#size' => 40,
     '#maxlength' => '256',
     '#required' => TRUE,
@@ -253,7 +256,7 @@ function ding_arbo_review_form($form, &$form_state, $faust, $movie_name, $ting_i
     '#value' => $faust,
   );
 
-   $form['object_ting_id'] = array(
+  $form['object_ting_id'] = array(
     '#type' => 'hidden',
     '#value' => $ting_id,
   );
@@ -298,7 +301,7 @@ function ding_arbo_review_form_callback($form, &$form_state) {
 
     $movie_title = $object->title . ' [anmeldelse]';
     $movie_description = t('Review by') . ' ' . $object->title . '. Beskrivelse af materialet: ' . $object->abstract;
-    $movie_tags = implode(', ', $object->subjects) . ', EasyTown, ' . $object->title . ', inlead, artesis';
+    $movie_tags = 'EasyTown, ' . $object->title . ', inlead, artesis';
     $movie_name = $form['movie_name']['#value'] . '.flv';
     $object_id = $object->ding_entity_id;
 
@@ -320,6 +323,8 @@ function ding_arbo_review_form_callback($form, &$form_state) {
         'arbo_notice',
         'ARBO widget',
         '<p style="text-align: center;">Thank you for your review!</p><p style="text-align: center;"><img src="/' . ARBO_PATH . '/img/accept.png" width="128" height="128" alt="" /></p>');
+      $commands[] = ajax_command_invoke('.reviewsContainer', 'hide', array());
+      $commands[] = ajax_command_invoke('.addVideoReviewContainer', 'hide', array());
     }
     else {
       $commands[] = ajax_command_ding_popup(

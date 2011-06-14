@@ -1,3 +1,10 @@
+<?
+/**
+ * @file ding_arbo-ting.tpl
+ *
+ */
+?>
+
 <div class="videoReviewsContainer">
   <h3><?php print t('Videoreviews'); ?></h3>
   <center>
@@ -9,7 +16,7 @@
 
     if ($user->uid != 0 && $profile->isAbleToReview($faust_number) && $data['review']['title'] == NULL) : ?>
     <div class="addVideoReviewContainer" style="margin-top: 15px;">
-      <h1 id="arbo_review"><?php echo l(t('Make your own videoreview'), 'arbo/ajax/widget/' . $object->id, array('attributes' => array('class' => array('use-ajax')))); ?></h1>
+      <h1 id="arbo_review"><?php echo l('<button class="form-submit">'.t('Make your own videoreview').'</button>', 'arbo/ajax/widget/' . $object->id, array('attributes' => array('class' => array('use-ajax')), 'html' => TRUE)); ?></h1>
     </div>
     <?php ;endif ?>
   </center>

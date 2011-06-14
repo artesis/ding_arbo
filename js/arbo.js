@@ -1,4 +1,8 @@
 (function ($) {
+  $(document).ready(function() {
+    $('#slider').tinycarousel({ display: 3 });
+  });
+
   Drupal.ajax.prototype.commands['ding_arbo_widget_init'] = function (ajax, response, status) {
     Drupal.arbo.theme_path = '/' + response.arbo_path;
     Drupal.arbo.movie_name = response.movie_name;
@@ -8,27 +12,6 @@
  
     Drupal.arbo.init();
   };
-  
-  // overwrite voxb_rating_callback command to work right with ARBO popup
-  Drupal.ajax.prototype.commands['voxb_rating_callback'] = function (ajax, response, status) {
-    // update rating count
-    $('.ratingCountSpan').html('(' + response.rating_count + ')');
-
-    // show thank message
-    $('.ratingsContainer .ajax_message').show();
-    $('.arbo-ratingsContainer .ajax_message').show();
-
-    // unbind mouse over/out on start
-    $('div.userRate').hide();
-    $('div.arbo-userRate').hide();
-
-    // update rating
-    $("div.ratingStars div.rating:lt(" + response.rating + ")").removeClass('star-off').addClass('star-on');
-    $("div.ratingStars div.rating:gt(" + (response.rating - 1) + ")").removeClass('star-on').addClass('star-off');
-
-    $("div.arbo-ratingStars div.rating:lt(" + response.rating + ")").removeClass('star-off').addClass('star-on');
-    $("div.arbo-ratingStars div.rating:gt(" + (response.rating - 1) + ")").removeClass('star-on').addClass('star-off');
-  }
 
   Drupal.arbo = {
     theme_path : '',
@@ -41,23 +24,35 @@
 
     init: function() {
      $('#arbo_widget div#scrubber a#player').attr('href', Drupal.arbo.stream_path + Drupal.arbo.movie_name + '.flv');
-     $('.stepContainer').hide();
-     $('#step1').show();
 
      // Bind ratings on mouse over and out
-     $('div.arbo-userRate div.rating').mouseover(function(){
-      $("div.arbo-userRate div.rating:lt(" + ($(this).index() + 1) + ")").removeClass('star-off').addClass('star-on');
-      $("div.arbo-userRate div.rating:gt(" + $(this).index() + ")").removeClass('star-on').addClass('star-off');
-     });
+      $('#step3 div.userRate div.rating').mouseover(function() {
+        if (!Drupal.voxb_item.rating_set) {
+          $("#step3 div.userRate div.rating:lt(" + ($(this).index() + 1) + ")").removeClass('star-off').removeClass('star-on').addClass('star-black');
+          $("#step3 div.userRate div.rating:gt(" + $(this).index() + ")").removeClass('star-black').removeClass('star-on').addClass('star-off');
+        }
+      });
+      
+      // Restore the stars after mouseout
+      $('#step3 div.userRate').mouseleave(function() {
+        if (!Drupal.voxb_item.rating_set) {
+          $("#step3 div.userRate div.rating:lt(" + Drupal.voxb_item.initial_rating + ")").removeClass('star-off').removeClass('star-black').addClass('star-on');
+          $("#step3 div.userRate div.rating:gt(" + (Drupal.voxb_item.initial_rating - 1) + ")").removeClass('star-on').removeClass('star-black').addClass('star-off');
+        }
+      });
 
-     $('div.arbo-userRate div.rating').mouseleave(function() {
-      $("div.arbo-userRate div.rating").removeClass('star-on').addClass('star-off');
-     });
+      // Show the rating ajax animation
+      $('#step3 div.userRate div.rating').click(function() {
+        if (!Drupal.voxb_item.rating_set) {
+          $('#step3 div.ratingsContainer .ajax_anim').show();
+          Drupal.voxb_item.rating_set = true;
+        }
+      });
 
      // Initializes the upper tabs
-     Drupal.arbo.stepArray = new Array($('#step1'), $('#step2'), $('#step3'), $('#step4'), $('#step5'));
      Drupal.arbo.stepIndex = 0;
-     Drupal.arbo.showStep(Drupal.arbo.stepArray[0]);
+     Drupal.arbo.stepArray = new Array($('#step1'), $('#step2'), $('#step3'), $('#step4'), $('#step5'));
+     Drupal.arbo.showStep(Drupal.arbo.stepArray[Drupal.arbo.stepIndex]);
      Drupal.arbo.drawProgress();
 
      // Handle the next tab click
@@ -66,7 +61,7 @@
         Drupal.arbo.stepIndex++;
 
         if (Drupal.arbo.stepIndex <= Drupal.arbo.stepArray.length-1) {
-         Drupal.arbo.showStep(Drupal.arbo.stepArray[Drupal.arbo.stepIndex]);
+          Drupal.arbo.showStep(Drupal.arbo.stepArray[Drupal.arbo.stepIndex]);
         }
         return false;
       });
@@ -74,24 +69,24 @@
       // Handle the prev tab click
       $('#goPrev').click(function() {
          // Decrease stepIndex
-       Drupal.arbo.stepIndex--;
+        Drupal.arbo.stepIndex--;
         if (Drupal.arbo.stepIndex >= 0) {
-         Drupal.arbo.showStep(Drupal.arbo.stepArray[Drupal.arbo.stepIndex]);
+          Drupal.arbo.showStep(Drupal.arbo.stepArray[Drupal.arbo.stepIndex]);
         }
         return false;
       });
 
       // Start recording
       $('a#record').click(function(){
-       Drupal.arbo.startRecord();
-       $('#goNext').hide();
-       return false;
+        Drupal.arbo.startRecord();
+        $('#goNext').hide();
+        return false;
       });
 
       // Stop recording
       $('a#stop').click(function() {
-       callToActionscript('stop');
-       return false;
+        callToActionscript('stop');
+        return false;
       });
     },
 

@@ -23,10 +23,10 @@ class VoxbVideoReviewRecord extends VoxbBase{
 
   private function parse($sXml) {
     $this->YTLink = $sXml->reviewData;
-      preg_match("~watch\?v=(.+?)$~is", $this->YTLink, $m);
+    preg_match("~watch\?v=(.+)$~is", $this->YTLink, $m);
 
-      // Create the YouTube thumbnail link
-      $this->YTThumbnailLink = 'http://img.youtube.com/vi/' . $m[1] . '/' . mt_rand(1, 3) . '.jpg';
+    // Create the YouTube thumbnail link
+    $this->YTThumbnailLink = 'http://img.youtube.com/vi/' . $m[1] . '/' . mt_rand(1, 3) . '.jpg';
   }
   /**
    * Getter function.

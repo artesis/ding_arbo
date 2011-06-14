@@ -13,8 +13,9 @@
   width: 550px;
 }
 
-.ui-widget {
+.ui-dialog {
   width: auto !important;
+  max-width: 580px;
 }
 
 h1#arbo_review {
@@ -149,5 +150,9 @@ div.flash {
 }
 
 #arbo_review .ajax-progress {
+  display: none;
+}
+
+#step3 .message {
   display: none;
 }

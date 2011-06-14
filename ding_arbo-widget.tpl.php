@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  *
@@ -11,7 +10,7 @@
  * All requests are sent and processed at red5 installation.
  */
 
-if ($user->uid != 0) : ?>
+?>
 
 <div id="arbo_widget">
   <div id="widget_block">
@@ -68,49 +67,45 @@ if ($user->uid != 0) : ?>
     <!-- Step 3 - Tag/rate functionality -->
     <div id="step3" class="stepContainer">
       <h1 class="step_title"><?php print t('Rate/Tag'); ?></h1>
-      <h3><?php print t('Tags'); ?></h3>
-	    <div class="recordTagHighlight">
-	    <?php 
-	      foreach ($voxb_item->getTags() as $v) {
-	        echo theme('voxb_tag_record', array('tag_name' => $v->getName()));
-	      }
-	    ?>
-	    </div>
-	    <div class="clearfix">&nbsp;</div>
-	    <?php 
-	      if (($user->uid != 0 && $profile->isAbleToTag($faust_number))) {
-	        echo drupal_render(drupal_get_form('ding_voxb_tag_form', $faust_number));
-	      } 
-	    ?>
-	    <div class="clearfix">&nbsp;</div>
-		  <div class="arbo-ratingsContainer">
-		    <h3><?php print t('Ratings'); ?></h3>
-		    <div class="arbo-ratingStars">
-		      <?php 
-		        $rating = $voxb_item->getRating();
-		        $rating = intval($rating / 20);
-		        for ($i = 1; $i <= 5; $i++) {
-		          echo '<div class="rating ' . ($i <= $rating ? 'star-on' : 'star-off') . '"></div>';
-		        }
-		        if ($voxb_item->getRatingCount() > 0) {
-		          echo '<span class="ratingCountSpan">(<span class="ratingVotesNumber">' . $voxb_item->getRatingCount().'</span>)</span>';
-		        }
-		      ?>
-		    </div>
-		    <?php if ($user->uid != 0 && $profile->isAbleToRate($faust_number)) : ?>
-		      <div class="addRatingContainer">
-		        <?php print t('Please rate this object'); ?><br />
-		        <div class="arbo-userRate">
-		          <div href="/voxb/ajax/rating/<?php echo $faust_number; ?>/1" class="use-ajax rating star-off"></div>
-		          <div href="/voxb/ajax/rating/<?php echo $faust_number; ?>/2" class="use-ajax rating star-off"></div>
-		          <div href="/voxb/ajax/rating/<?php echo $faust_number; ?>/3" class="use-ajax rating star-off"></div>
-		          <div href="/voxb/ajax/rating/<?php echo $faust_number; ?>/4" class="use-ajax rating star-off"></div>
-		          <div href="/voxb/ajax/rating/<?php echo $faust_number; ?>/5" class="use-ajax rating star-off"></div>
-		        </div>
-		      </div>
-		      <p class="ajax_message"><?php echo t('Thank you for contributing.'); ?></p>
-		    <?php ;endif ?>
-		  </div>
+        <h3><?php print t('Tags'); ?></h3>
+        <div class="tagsContainer">
+          <div class="recordTagHighlight">
+          <?php 
+            foreach ($voxb_item->getTags() as $v) {
+              echo theme('voxb_tag_record', array('tag_name' => $v->getName()));
+            }
+          ?>
+          </div>
+          <div class="clearfix">&nbsp;</div>
+          <?php 
+            if (($user->uid != 0 && $profile->isAbleToTag($faust_number))) {
+              echo drupal_render(drupal_get_form('ding_voxb_tag_form', $faust_number));
+            } 
+          ?>
+          <div class="clearfix">&nbsp;</div>
+        </div>
+        <div class="clearfix">&nbsp;</div>
+        <div class="ratingsContainer">
+          <h3><?php print t('Ratings'); ?></h3>
+            <?php 
+              $rating = $voxb_item->getRating();
+              $rating = intval($rating / 20);
+            ?>
+            <?php if ($user->uid != 0) : ?>
+            <div class="addRatingContainer">
+              <div class="userRate">
+                <?php for ($i = 1; $i <= 5; $i++) : ?>
+                <div href="/voxb/ajax/rating/<?php echo $faust_number . "/" . $i; ?>" class="<?php echo ($profile->isAbleToRate($faust_number) ? 'use-ajax' : ''); ?> rating <?php echo ($i <= $rating ? 'star-on' : 'star-off'); ?>"></div>
+                <?php ;endfor ?>
+              </div>
+              <?php ;endif ?>
+            </div>
+            <?php
+              echo '<span class="ratingCountSpan">(<span class="ratingVotesNumber">' . (($voxb_item->getRatingCount() > 0) ? $voxb_item->getRatingCount() : '0') . '</span>)</span>';
+            ?>
+            <div class="ajax_anim">&nbsp;</div>
+            <div class="clearfix"></div>
+        </div>
       <div class="clear"></div>
     </div>
     <!-- Step 4 - Mail confirmation -->
@@ -151,8 +146,5 @@ if ($user->uid != 0) : ?>
     <div id="tools">
       <a id="progressClone"></a>
     </div>
-    <?php ;endif ?>
-    <?php if ($user->uid != 0) : ?>
   </div>
 </div>
-<?php ;endif ?>
