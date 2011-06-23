@@ -101,7 +101,7 @@
               <?php ;endif ?>
             </div>
             <?php
-              echo '<span class="rating-count-span">(<span class="rating-votesnumber">' . (($voxb_item->getRatingCount() > 0) ? $voxb_item->getRatingCount() : '0') . '</span>)</span>';
+              echo '<span class="rating-count-span">(<span class="rating-votes-number">' . (($voxb_item->getRatingCount() > 0) ? $voxb_item->getRatingCount() : '0') . '</span>)</span>';
             ?>
             <div class="ajax-anim">&nbsp;</div>
             <div class="clearfix"></div>
