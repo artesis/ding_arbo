@@ -12,19 +12,19 @@
 
 ?>
 
-<div id="arbo_widget">
-  <div id="widget_block">
+<div id="arbo-widget">
+  <div id="widget-block">
     <!-- This displays the current progress in the wizard -->
     <div id="progress"></div>
-    <div class="clear"></div>
+    <div class="clearfix"></div>
     <br />
 
     <!-- Contains all the steps -->
     <!-- Step 1 - Record -->
-    <div id="step1" class="stepContainer">
-      <h1 class="step_title">Optag</h1>
+    <div id="step1" class="step-container">
+      <h1 class="step-title">Optag</h1>
       <p><?php print t('Press the record button to record your review'); ?></p>
-      <div class="record_controls">
+      <div class="record-controls">
         <a href="#" id="record"><img src="/<?php echo ARBO_PATH; ?>/img/record-32.png" /></a>
         <a href="#" id="stop" style="display:none;"><img src="/<?php echo ARBO_PATH; ?>/img/stop-32.png" /></a>
       </div>
@@ -48,11 +48,11 @@
           </embed>
         </object>
       </div>
-      <div class="clear"></div>
+      <div class="clearfix"></div>
     </div>
     <!-- Step 2 - View recorded video -->
-    <div id="step2" class="stepContainer">
-      <h1 class="step_title"><?php print t('Approve'); ?></h1>
+    <div id="step2" class="step-container">
+      <h1 class="step-title"><?php print t('Approve'); ?></h1>
       <p><?php print t('Look your video through and press the green button to proceed'); ?></p> 
       <div id="scrubber">
         <a  
@@ -62,14 +62,14 @@
         </a>
       </div>
       <p><?php print t('Tip: you can retry by pressing the back-button'); ?></p>
-      <div class="clear"></div>
+      <div class="clearfix"></div>
     </div>
     <!-- Step 3 - Tag/rate functionality -->
-    <div id="step3" class="stepContainer">
-      <h1 class="step_title"><?php print t('Rate/Tag'); ?></h1>
+    <div id="step3" class="step-container">
+      <h1 class="step-title"><?php print t('Rate/Tag'); ?></h1>
         <h3><?php print t('Tags'); ?></h3>
-        <div class="tagsContainer">
-          <div class="recordTagHighlight">
+        <div class="tags-container">
+          <div class="record-tag-highlight">
           <?php 
             foreach ($voxb_item->getTags() as $v) {
               echo theme('voxb_tag_record', array('tag_name' => $v->getName()));
@@ -85,15 +85,15 @@
           <div class="clearfix">&nbsp;</div>
         </div>
         <div class="clearfix">&nbsp;</div>
-        <div class="ratingsContainer">
+        <div class="ratings-container">
           <h3><?php print t('Ratings'); ?></h3>
             <?php 
               $rating = $voxb_item->getRating();
               $rating = intval($rating / 20);
             ?>
             <?php if ($user->uid != 0) : ?>
-            <div class="addRatingContainer">
-              <div class="userRate">
+            <div class="add-rating-container">
+              <div class="user-rate">
                 <?php for ($i = 1; $i <= 5; $i++) : ?>
                 <div href="/voxb/ajax/rating/<?php echo $faust_number . "/" . $i; ?>" class="<?php echo ($profile->isAbleToRate($faust_number) ? 'use-ajax' : ''); ?> rating <?php echo ($i <= $rating ? 'star-on' : 'star-off'); ?>"></div>
                 <?php ;endfor ?>
@@ -101,25 +101,25 @@
               <?php ;endif ?>
             </div>
             <?php
-              echo '<span class="ratingCountSpan">(<span class="ratingVotesNumber">' . (($voxb_item->getRatingCount() > 0) ? $voxb_item->getRatingCount() : '0') . '</span>)</span>';
+              echo '<span class="rating-count-span">(<span class="rating-votesnumber">' . (($voxb_item->getRatingCount() > 0) ? $voxb_item->getRatingCount() : '0') . '</span>)</span>';
             ?>
-            <div class="ajax_anim">&nbsp;</div>
+            <div class="ajax-anim">&nbsp;</div>
             <div class="clearfix"></div>
         </div>
-      <div class="clear"></div>
+      <div class="clearfix"></div>
     </div>
     <!-- Step 4 - Mail confirmation -->
-    <div id="step4" class="stepContainer">
-      <h1 class="step_title">Confirm</h1>
+    <div id="step4" class="step-container">
+      <h1 class="step-title">Confirm</h1>
       <p><?php print t('We would like to confirm you when your video review is processed and available, please type your email address below'); ?></p>
       <input type="text" name="email" />
     </div>
     <!-- Step 5 - Display terms of usage -->
-    <div id="step5" class="stepContainer">
-      <h1 class="step_title"><?php print t('Send'); ?></h1>
+    <div id="step5" class="step-container">
+      <h1 class="step-title"><?php print t('Send'); ?></h1>
       <p><?php print t('Please read the following terms'); ?></p>
       <?php echo drupal_render(drupal_get_form('ding_arbo_review_form', $faust_number, $video_filename, $ting_id)); ?>
-      <div class="clear"></div>
+      <div class="clearfix"></div>
     </div>
 
     <!-- Controls -->
@@ -130,7 +130,7 @@
           'arbo/ajax/widget/step/1',
            array(
              'html' => TRUE,
-             'attributes' => array('class' => array('left'), 'id' => array('goPrev'))));
+             'attributes' => array('class' => array('left'), 'id' => array('go-prev'))));
       ?>
       
       <?php
@@ -139,12 +139,12 @@
           'arbo/ajax/widget/step/2',
            array(
              'html' => TRUE,
-             'attributes' => array('class' => array('right'), 'id' => array('goNext'))));
+             'attributes' => array('class' => array('right'), 'id' => array('go-next'))));
       ?>
-      <div class="clear"></div>
+      <div class="clearfix"></div>
     </div>
     <div id="tools">
-      <a id="progressClone"></a>
+      <a id="progress-clone"></a>
     </div>
   </div>
 </div>

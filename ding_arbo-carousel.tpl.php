@@ -8,12 +8,13 @@
 
 $item = new VoxbItem();
 $item->addReviewHandler('videoreview', new VoxbVideoReviews());
-$item->fetchByFaust($faust_number);
+$item->fetchByFaust($object->localId);
 $reviews = $item->getReviews('videoreview');
 
-if ($reviews != NULL && $reviews->getCount() > 0) {
+if ($reviews && $reviews->getCount() > 0) {
 
 ?>
+  <h3 style="text-align: left;"><?php print t('Videoreviews'); ?></h3>
   <div id="slider">
     <a class="buttons prev" href="#"></a>
     <div class="viewport">

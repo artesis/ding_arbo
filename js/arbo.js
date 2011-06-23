@@ -23,28 +23,28 @@
     stepArray : '',
 
     init: function() {
-     $('#arbo_widget div#scrubber a#player').attr('href', Drupal.arbo.stream_path + Drupal.arbo.movie_name + '.flv');
+     $('#arbo-widget div#scrubber a#player').attr('href', Drupal.arbo.stream_path + Drupal.arbo.movie_name + '.flv');
 
      // Bind ratings on mouse over and out
-      $('#step3 div.userRate div.rating').mouseover(function() {
+      $('#step3 div.user-rate div.rating').mouseover(function() {
         if (!Drupal.voxb_item.rating_set) {
-          $("#step3 div.userRate div.rating:lt(" + ($(this).index() + 1) + ")").removeClass('star-off').removeClass('star-on').addClass('star-black');
-          $("#step3 div.userRate div.rating:gt(" + $(this).index() + ")").removeClass('star-black').removeClass('star-on').addClass('star-off');
+          $("#step3 div.user-rate div.rating:lt(" + ($(this).index() + 1) + ")").removeClass('star-off').removeClass('star-on').addClass('star-black');
+          $("#step3 div.user-rate div.rating:gt(" + $(this).index() + ")").removeClass('star-black').removeClass('star-on').addClass('star-off');
         }
       });
       
       // Restore the stars after mouseout
-      $('#step3 div.userRate').mouseleave(function() {
+      $('#step3 div.user-rate').mouseleave(function() {
         if (!Drupal.voxb_item.rating_set) {
-          $("#step3 div.userRate div.rating:lt(" + Drupal.voxb_item.initial_rating + ")").removeClass('star-off').removeClass('star-black').addClass('star-on');
-          $("#step3 div.userRate div.rating:gt(" + (Drupal.voxb_item.initial_rating - 1) + ")").removeClass('star-on').removeClass('star-black').addClass('star-off');
+          $("#step3 div.user-rate div.rating:lt(" + Drupal.voxb_item.initial_rating + ")").removeClass('star-off').removeClass('star-black').addClass('star-on');
+          $("#step3 div.user-rate div.rating:gt(" + (Drupal.voxb_item.initial_rating - 1) + ")").removeClass('star-on').removeClass('star-black').addClass('star-off');
         }
       });
 
       // Show the rating ajax animation
-      $('#step3 div.userRate div.rating').click(function() {
+      $('#step3 div.user-rate div.rating').click(function() {
         if (!Drupal.voxb_item.rating_set) {
-          $('#step3 div.ratingsContainer .ajax_anim').show();
+          $('#step3 div.ratings-container .ajax-anim').show();
           Drupal.voxb_item.rating_set = true;
         }
       });
@@ -56,7 +56,7 @@
      Drupal.arbo.drawProgress();
 
      // Handle the next tab click
-     $('#goNext').click(function() {
+     $('#go-next').click(function() {
          // Increase stepIndex
         Drupal.arbo.stepIndex++;
 
@@ -67,7 +67,7 @@
       });
 
       // Handle the prev tab click
-      $('#goPrev').click(function() {
+      $('#go-prev').click(function() {
          // Decrease stepIndex
         Drupal.arbo.stepIndex--;
         if (Drupal.arbo.stepIndex >= 0) {
@@ -79,7 +79,7 @@
       // Start recording
       $('a#record').click(function(){
         Drupal.arbo.startRecord();
-        $('#goNext').hide();
+        $('#go-next').hide();
         return false;
       });
 
@@ -93,17 +93,17 @@
     startRecord: function() {
       var seconds = 3;
       var timer = '';
-      $('#arbo_widget div.record_controls a#record').hide();
-      $('#arbo_widget div.record_controls').prepend('<p style="font-size: 26px; text-align:center;">'+seconds+'</p>');
+      $('#arbo-widget div.record-controls a#record').hide();
+      $('#arbo-widget div.record-controls').prepend('<p style="font-size: 26px; text-align:center;">'+seconds+'</p>');
 
       timer = setInterval(function(){
         seconds--;
         if (seconds == 0) {
-         $('#arbo_widget div.record_controls p').remove();
+         $('#arbo-widget div.record-controls p').remove();
          clearInterval(timer);
           callToActionscript('record');
         }
-        $('#arbo_widget div.record_controls p').html(seconds);
+        $('#arbo-widget div.record-controls p').html(seconds);
       }, 1000);
     },
 
@@ -113,7 +113,7 @@
 
       // Draw each step
       $(Drupal.arbo.stepArray).each(function(i) {
-        progressClone = $('#tools #progressClone').clone().removeAttr('id');
+        progressClone = $('#tools #progress-clone').clone().removeAttr('id');
 
         if(i < Drupal.arbo.stepIndex) {
           progressClone.addClass('previous');
@@ -136,27 +136,27 @@
 
     // Init prev/next buttons
     showStep : function(stepHandle) {
-      $('.stepContainer').hide();
+      $('.step-container').hide();
       $(stepHandle).show();
 
       // Control showing/hiding of back/next buttons
       if (Drupal.arbo.stepIndex == 0) {
-        $('#goPrev').hide();
-        $('#goNext').hide();
+        $('#go-prev').hide();
+        $('#go-next').hide();
       }
       else if (Drupal.arbo.stepIndex == Drupal.arbo.stepArray.length-1) {
-        $('#goNext').hide();
+        $('#go-next').hide();
       }
       else {
         // If not first or last step, then make sure that both buttons are shown
-        $('#goPrev').show();
-        $('#goNext').show();
+        $('#go-prev').show();
+        $('#go-next').show();
       }
 
       // Retireve the reviewer email from prev step
       if (Drupal.arbo.stepIndex == 4) {
-        var email = $('#arbo_widget input[name=email]').val();
-        $('#arbo_widget input[name=review_email]').val(email);
+        var email = $('#arbo-widget input[name=email]').val();
+        $('#arbo-widget input[name=review_email]').val(email);
       }
 
      Drupal.arbo.drawProgress();
@@ -188,7 +188,7 @@
     else if (str == 'stop') {
       jQuery('#stop').hide();
       jQuery('#record').show();
-      jQuery('#goNext').show();
+      jQuery('#go-next').show();
       flowplayer('player', Drupal.arbo.theme_path+'/swf/flowplayer-3.2.7.swf');
     }
 
