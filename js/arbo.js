@@ -50,7 +50,7 @@
       });
 
      // Initializes the upper tabs
-     Drupal.arbo.stepIndex = 2;
+     Drupal.arbo.stepIndex = 0;
      Drupal.arbo.stepArray = new Array($('#step1'), $('#step2'), $('#step3'), $('#step4'), $('#step5'));
      Drupal.arbo.showStep(Drupal.arbo.stepArray[Drupal.arbo.stepIndex]);
      Drupal.arbo.drawProgress();
