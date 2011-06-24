@@ -67,46 +67,46 @@
     <!-- Step 3 - Tag/rate functionality -->
     <div id="step3" class="step-container">
       <h1 class="step-title"><?php print t('Rate/Tag'); ?></h1>
-        <h3><?php print t('Tags'); ?></h3>
-        <div class="tags-container">
-          <div class="record-tag-highlight">
-          <?php 
-            foreach ($voxb_item->getTags() as $v) {
-              echo theme('voxb_tag_record', array('tag_name' => $v->getName()));
-            }
-          ?>
-          </div>
-          <div class="clearfix">&nbsp;</div>
-          <?php 
-            if (($user->uid != 0 && $profile->isAbleToTag($faust_number))) {
-              echo drupal_render(drupal_get_form('ding_voxb_tag_form', $faust_number));
-            } 
-          ?>
-          <div class="clearfix">&nbsp;</div>
-        </div>
-        <div class="clearfix">&nbsp;</div>
-        <div class="ratings-container">
-          <h3><?php print t('Ratings'); ?></h3>
+        <div>
+          <div class="tags-container">
+            <h3><?php print t('Tags'); ?></h3>
+            <div class="record-tag-highlight">
             <?php 
-              $rating = $voxb_item->getRating();
-              $rating = intval($rating / 20);
+              foreach ($voxb_item->getTags() as $v) {
+                echo theme('voxb_tag_record', array('tag_name' => $v->getName()));
+              }
             ?>
-            <?php if ($user->uid != 0) : ?>
-            <div class="add-rating-container">
-              <div class="user-rate">
-                <?php for ($i = 1; $i <= 5; $i++) : ?>
-                <div href="/voxb/ajax/rating/<?php echo $faust_number . "/" . $i; ?>" class="<?php echo ($profile->isAbleToRate($faust_number) ? 'use-ajax' : ''); ?> rating <?php echo ($i <= $rating ? 'star-on' : 'star-off'); ?>"></div>
-                <?php ;endfor ?>
-              </div>
-              <?php ;endif ?>
             </div>
-            <?php
-              echo '<span class="rating-count-span">(<span class="rating-votes-number">' . (($voxb_item->getRatingCount() > 0) ? $voxb_item->getRatingCount() : '0') . '</span>)</span>';
+            <div class="clearfix">&nbsp;</div>
+            <?php 
+              if (($profile && $profile->isAbleToTag($faust_number))) {
+                echo drupal_render(drupal_get_form('ding_voxb_tag_form', $faust_number));
+              } 
             ?>
-            <div class="ajax-anim">&nbsp;</div>
-            <div class="clearfix"></div>
+          </div>
+          <div class="ratings-container">
+            <h3><?php print t('Ratings'); ?></h3>
+              <?php 
+                $rating = $voxb_item->getRating();
+                $rating = intval($rating / 20);
+              ?>
+              <?php if ($profile) : ?>
+              <div class="add-rating-container">
+                <div class="user-rate">
+                  <?php for ($i = 1; $i <= 5; $i++) : ?>
+                  <div href="/voxb/ajax/rating/<?php echo $faust_number . "/" . $i; ?>" class="<?php echo ($profile->isAbleToRate($faust_number) ? 'use-ajax' : ''); ?> rating <?php echo ($i <= $rating ? 'star-on' : 'star-off'); ?>"></div>
+                  <?php ;endfor ?>
+                </div>
+                <?php ;endif ?>
+              </div>
+              <?php
+                echo '<span class="rating-count-span">(<span class="rating-votes-number">' . (($voxb_item->getRatingCount() > 0) ? $voxb_item->getRatingCount() : '0') . '</span>)</span>';
+              ?>
+              <div class="ajax-anim">&nbsp;</div>
+              <div class="clear"></div>
+          </div>
+          <div class="clear"></div>
         </div>
-      <div class="clearfix"></div>
     </div>
     <!-- Step 4 - Mail confirmation -->
     <div id="step4" class="step-container">
@@ -126,7 +126,7 @@
     <div class="controls">
       <?php
         echo l(
-          '<img src="/'.ARBO_PATH.'/img/rewind-32.png" />',
+          '<img src="/' . ARBO_PATH . '/img/rewind-32.png" />',
           'arbo/ajax/widget/step/1',
            array(
              'html' => TRUE,
@@ -135,13 +135,12 @@
       
       <?php
         echo l(
-          '<img src="/'.ARBO_PATH.'/img/next-32.png" />',
+          '<img src="/' . ARBO_PATH . '/img/next-32.png" />',
           'arbo/ajax/widget/step/2',
            array(
              'html' => TRUE,
              'attributes' => array('class' => array('right'), 'id' => array('go-next'))));
       ?>
-      <div class="clearfix"></div>
     </div>
     <div id="tools">
       <a id="progress-clone"></a>

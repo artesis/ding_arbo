@@ -191,7 +191,7 @@ function ding_arbo_help($path, $arg) {
 }
 
 /**
- * Arbo module config form
+ * Arbo module config form.
  *
  * @param $form
  *   Processed form fields and their data
@@ -225,7 +225,7 @@ function ding_arbo_config_form($form, $form_state) {
 }
 
 /**
- * The video reviews form, to store review data
+ * The video reviews form, to store review data.
  *
  * @param $form
  *   Processed form fields and their data
@@ -283,7 +283,7 @@ function ding_arbo_review_form($form, &$form_state, $faust, $movie_name, $ting_i
 
 /**
  * Callback function for processing video reviews,
- * stores ata in hidden fields and sends them to red5 for further processing
+ * stores data in hidden fields and sends them to red5 for further processing.
  *
  * @param $form
  *   Processed form fields and their data

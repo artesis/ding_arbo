@@ -24,7 +24,7 @@ h1#arbo-review {
 
 #arbo-widget .step-container {
   margin: 0 auto;
-  height: 485px;
+  height: 500px;
   width: 500px;
 }
 
@@ -78,7 +78,12 @@ h1#arbo-review {
 
 #arbo-widget .clear {
   clear : both;
+  line-height: 1px;
   height : 0;
+}
+
+#arbo-widget .message {
+  display: none;
 }
 
 #arbo-widget .left {
@@ -146,4 +151,9 @@ div.flash {
 
 #arbo-review .ajax-progress {
   display: none;
+}
+
+#arbo-review .record-tag-highlight {
+  height: 300px;
+  overflow: auto;
 }

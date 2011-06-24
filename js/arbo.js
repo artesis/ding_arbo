@@ -44,13 +44,13 @@
       // Show the rating ajax animation
       $('#step3 div.user-rate div.rating').click(function() {
         if (!Drupal.voxb_item.rating_set) {
-          $('#step3 div.ratings-container .ajax-anim').show();
+          $('#step3 .ajax-anim').show();
           Drupal.voxb_item.rating_set = true;
         }
       });
 
      // Initializes the upper tabs
-     Drupal.arbo.stepIndex = 0;
+     Drupal.arbo.stepIndex = 2;
      Drupal.arbo.stepArray = new Array($('#step1'), $('#step2'), $('#step3'), $('#step4'), $('#step5'));
      Drupal.arbo.showStep(Drupal.arbo.stepArray[Drupal.arbo.stepIndex]);
      Drupal.arbo.drawProgress();
