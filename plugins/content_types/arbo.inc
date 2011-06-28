@@ -3,8 +3,8 @@
  * @file
  *
  * ARBO content type implementation.
- *
  */
+
 $plugin = array(
   'single' => TRUE,
   'title' => t('ARBO'),

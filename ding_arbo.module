@@ -4,6 +4,7 @@
  *
  * Main ARBO module file.
  */
+
 define('FLV_ADDR', 'http://localhost/index.php?file=');
 define('RESPONDER_ADDR', 'http://localhost/index.php');
 define('ARBO_PATH', drupal_get_path('module', 'ding_arbo'));

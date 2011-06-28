@@ -3,9 +3,9 @@
  * @file
  * 
  * Inclusion on arbo recorder stuff
- *
  */
 ?>
+
 <div class="video-reviews-container">
   <center>
     <?php

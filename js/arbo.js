@@ -201,7 +201,7 @@
     jQuery('#time').html(value);
   }
 
-  /*
+  /**
    * This method is called by Flash
    * Probbaly we will get errors if it will be removed
    */

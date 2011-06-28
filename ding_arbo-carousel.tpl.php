@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  *
@@ -12,8 +11,8 @@ $item->fetchByFaust($object->localId);
 $reviews = $item->getReviews('videoreview');
 
 if ($reviews && $reviews->getCount() > 0) {
-
 ?>
+
   <h3 style="text-align: left;"><?php print t('Videoreviews'); ?></h3>
   <div id="slider">
     <a class="buttons prev" href="#"></a>

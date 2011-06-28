@@ -9,17 +9,18 @@
  *
  * All requests are sent and processed at red5 installation.
  */
-
 ?>
 
 <div id="arbo-widget">
   <div id="widget-block">
+
     <!-- This displays the current progress in the wizard -->
     <div id="progress"></div>
     <div class="clearfix"></div>
     <br />
 
     <!-- Contains all the steps -->
+
     <!-- Step 1 - Record -->
     <div id="step1" class="step-container">
       <h1 class="step-title">Optag</h1>
@@ -50,6 +51,7 @@
       </div>
       <div class="clearfix"></div>
     </div>
+
     <!-- Step 2 - View recorded video -->
     <div id="step2" class="step-container">
       <h1 class="step-title"><?php print t('Approve'); ?></h1>
@@ -64,6 +66,7 @@
       <p><?php print t('Tip: you can retry by pressing the back-button'); ?></p>
       <div class="clearfix"></div>
     </div>
+
     <!-- Step 3 - Tag/rate functionality -->
     <div id="step3" class="step-container">
       <h1 class="step-title"><?php print t('Rate/Tag'); ?></h1>
@@ -108,12 +111,14 @@
           <div class="clear"></div>
         </div>
     </div>
+
     <!-- Step 4 - Mail confirmation -->
     <div id="step4" class="step-container">
       <h1 class="step-title">Confirm</h1>
       <p><?php print t('We would like to confirm you when your video review is processed and available, please type your email address below'); ?></p>
       <input type="text" name="email" />
     </div>
+
     <!-- Step 5 - Display terms of usage -->
     <div id="step5" class="step-container">
       <h1 class="step-title"><?php print t('Send'); ?></h1>
@@ -145,5 +150,6 @@
     <div id="tools">
       <a id="progress-clone"></a>
     </div>
+
   </div>
 </div>
