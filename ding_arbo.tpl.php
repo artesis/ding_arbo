@@ -6,7 +6,6 @@
  *
  */
 ?>
-
 <div class="video-reviews-container">
   <center>
     <?php

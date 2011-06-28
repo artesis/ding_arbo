@@ -13,13 +13,14 @@ define('WIDGET_STEPS', 5);
  * Implements hook_init().
  */
 function ding_arbo_init() {
+  drupal_add_library('system', 'drupal.ajax');
+  drupal_add_library('system', 'jquery.form');
   drupal_add_js(ARBO_PATH . '/js/arbo.js');
   drupal_add_js(ARBO_PATH . '/js/flowplayer-3.2.6.min.js');
   drupal_add_js(ARBO_PATH . '/js/tiny_carousel.js');
   drupal_add_css(ARBO_PATH . '/css/arbo-widget.css');
   drupal_add_css(ARBO_PATH . '/css/arbo-carousel.css');
-  drupal_add_library('system', 'drupal.ajax');
-  drupal_add_library('system', 'jquery.form');
+  
 }
 
 /**
@@ -160,18 +161,14 @@ function ding_arbo_widget_init($video_filename) {
 }
 
 /**
- * Implements hook_ctools_plugin_directory().
- */
-function ding_arbo_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'ctools') {
-    return 'plugins/' . $plugin;
-  }
-}
-
-/**
  * Implements hook_theme().
  */
 function ding_arbo_theme() {
+
+  $hooks['arbo'] = array(
+    'variables' => array('object' => NULL),
+    'template' => 'ding_arbo',
+  );
 
   $hooks['arbo_widget'] = array(
     'variables' => array('voxb_item' => NULL, 'profile' => NULL, 'faust_number' => NULL, 'video_filename' => NULL),
@@ -339,4 +336,13 @@ function ding_arbo_review_form_callback($form, &$form_state) {
   }
 
   return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * Implements MODULE_ctools_plugin_directory().
+ */
+function ding_arbo_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools') {
+    return 'plugins/' . $plugin;
+  }
 }
