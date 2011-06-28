@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
+ *
+ * Main ARBO module file.
  */
-
 define('FLV_ADDR', 'http://localhost/index.php?file=');
 define('RESPONDER_ADDR', 'http://localhost/index.php');
 define('ARBO_PATH', drupal_get_path('module', 'ding_arbo'));
 define('TING_PATH', drupal_get_path('module', 'ting'));
-define('WIDGET_STEPS', 5);
 
 /**
  * Implements hook_init().
@@ -20,7 +20,6 @@ function ding_arbo_init() {
   drupal_add_js(ARBO_PATH . '/js/tiny_carousel.js');
   drupal_add_css(ARBO_PATH . '/css/arbo-widget.css');
   drupal_add_css(ARBO_PATH . '/css/arbo-carousel.css');
-  
 }
 
 /**
@@ -164,7 +163,6 @@ function ding_arbo_widget_init($video_filename) {
  * Implements hook_theme().
  */
 function ding_arbo_theme() {
-
   $hooks['arbo'] = array(
     'variables' => array('object' => NULL),
     'template' => 'ding_arbo',
@@ -329,7 +327,6 @@ function ding_arbo_review_form_callback($form, &$form_state) {
         'ARBO widget',
         '<p style="text-align: center;">An unexpected error happen, try again later.</p><p style="text-align: center;"><img src="/' . ARBO_PATH . '/img/repeat-128.png" width="128" height="128" alt="" /></p>');
     }
-
   }
   else {
     $commands[] = ajax_command_ding_popup('review_error', 'Error', '<p>' . t('You should accept the terms of agreement.') . '</p>');
