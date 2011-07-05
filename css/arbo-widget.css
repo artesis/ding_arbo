@@ -157,3 +157,8 @@ div.flash {
   height: 300px;
   overflow: auto;
 }
+
+.video-reviews-container .form-submit {
+  font-size: 16px;
+  line-height: 19px;
+}
