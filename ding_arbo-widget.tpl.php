@@ -23,7 +23,7 @@
 
     <!-- Step 1 - Record -->
     <div id="step1" class="step-container">
-      <h1 class="step-title">Optag</h1>
+      <h1 class="step-title"><?php print t('Record'); ?></h1>
       <p><?php print t('Press the record button to record your review'); ?></p>
       <div class="record-controls">
         <a href="#" id="record"><img src="/<?php echo ARBO_PATH; ?>/img/record-32.png" /></a>
@@ -55,11 +55,11 @@
     <!-- Step 2 - View recorded video -->
     <div id="step2" class="step-container">
       <h1 class="step-title"><?php print t('Approve'); ?></h1>
-      <p><?php print t('Look your video through and press the green button to proceed'); ?></p> 
+      <p><?php print t('Look your video through and press the green button to proceed'); ?></p>
       <div id="scrubber">
-        <a  
+        <a
          href="<?php echo variable_get('arbo_flv_server_addr', FLV_ADDR) . '/' . $video_filename . '.flv'; ?>"
-         style="display:block;width:500px;height:350px"  
+         style="display:block;width:500px;height:350px"
          id="player"> 
         </a>
       </div>
@@ -89,7 +89,7 @@
           </div>
           <div class="ratings-container">
             <h3><?php print t('Ratings'); ?></h3>
-              <?php 
+              <?php
                 $rating = $voxb_item->getRating();
                 $rating = intval($rating / 20);
               ?>
@@ -137,7 +137,7 @@
              'html' => TRUE,
              'attributes' => array('class' => array('left'), 'id' => array('go-prev'))));
       ?>
-      
+
       <?php
         echo l(
           '<img src="/' . ARBO_PATH . '/img/next-32.png" />',
@@ -150,6 +150,5 @@
     <div id="tools">
       <a id="progress-clone"></a>
     </div>
-
   </div>
 </div>

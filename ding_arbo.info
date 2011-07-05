@@ -6,6 +6,7 @@ version = 1.1
 
 configure = admin/config/ding/arbo
 dependencies[] = ding_voxb
+dependencies[] = ding_popup
 
 files[] = lib/VoxbVideoReviewRecord.class.php
 files[] = lib/VoxbVideoReviews.class.php
