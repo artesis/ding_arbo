@@ -268,7 +268,7 @@ function ding_arbo_review_form($form, &$form_state, $faust, $movie_name, $ting_i
 
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => 'submit',
+    '#value' => t('submit'),
     '#ajax' => array(
       'callback' => 'ding_arbo_review_form_callback'
     ),
@@ -317,20 +317,23 @@ function ding_arbo_review_form_callback($form, &$form_state) {
     if ($status == '0x01') {
       $commands[] = ajax_command_ding_popup(
         'arbo_notice',
-        'ARBO widget',
-        '<p style="text-align: center;">Thank you for your review!</p><p style="text-align: center;"><img src="/' . ARBO_PATH . '/img/accept.png" width="128" height="128" alt="" /></p>');
+        t('ARBO widget'),
+        '<p style="text-align: center;">' . t('Thank you for your review!') . '</p><p style="text-align: center;"><img src="/' . ARBO_PATH . '/img/accept.png" width="128" height="128" alt="" /></p>');
       $commands[] = ajax_command_invoke('.reviewsContainer', 'hide', array());
       $commands[] = ajax_command_invoke('.addVideoReviewContainer', 'hide', array());
     }
     else {
       $commands[] = ajax_command_ding_popup(
         'arbo_notice',
-        'ARBO widget',
-        '<p style="text-align: center;">An unexpected error happen, try again later.</p><p style="text-align: center;"><img src="/' . ARBO_PATH . '/img/repeat-128.png" width="128" height="128" alt="" /></p>');
+        t('ARBO widget'),
+        '<p style="text-align: center;">' . t('An unexpected error occured, try again later.') . '</p><p style="text-align: center;"><img src="/' . ARBO_PATH . '/img/repeat-128.png" width="128" height="128" alt="" /></p>');
     }
   }
   else {
-    $commands[] = ajax_command_ding_popup('review_error', 'Error', '<p>' . t('You should accept the terms of agreement.') . '</p>');
+    $commands[] = ajax_command_ding_popup(
+      'review_error',
+      t('Error'),
+      '<p>' . t('You should accept the terms of agreement.') . '</p>');
   }
 
   return array('#type' => 'ajax', '#commands' => $commands);
