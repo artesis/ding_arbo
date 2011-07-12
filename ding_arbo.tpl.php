@@ -15,9 +15,9 @@
       $acted = $profile->getVoxbUserData($object->localId);
     }
     
-    if ($profile && $profile->isAbleToReview($object->localId) && !isset($acted['review']['title']) && !isset($acted['videoreview']['title'])) { ?>
+    if ($profile && $profile->isAbleToReview($object->localId) && $acted['review']['title'] == '' && !isset($acted['videoreview']['title'])) { ?>
     <div class="add-video-review-container" style="margin-top: 15px;">
-      <h1 id="arbo-review"><?php echo l('<button class="form-submit rounded-corners">'.t('Make your own videoreview').'</button>', 'arbo/ajax/widget/' . $object->id, array('attributes' => array('class' => array('use-ajax')), 'html' => TRUE)); ?></h1>
+      <h1 id="arbo-review"><?php echo l('<input type="button" class="form-submit rounded-corners" value="' . t('Make your own videoreview') . '">', 'arbo/ajax/widget/' . $object->id, array('attributes' => array('class' => array('use-ajax')), 'html' => TRUE)); ?></h1>
     </div>
     <?php } ?>
   </center>
