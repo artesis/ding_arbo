@@ -268,10 +268,13 @@ function ding_arbo_review_form($form, &$form_state, $faust, $movie_name, $ting_i
 
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('submit'),
+    '#value' => 'Submit',
     '#ajax' => array(
       'callback' => 'ding_arbo_review_form_callback'
     ),
+    '#attributes' => array(
+      'class' => array('rounded-corners')
+    )
   );
 
   return $form;
