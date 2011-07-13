@@ -17,7 +17,7 @@
     
     if ($profile && $profile->isAbleToReview($object->localId) && $acted['review']['title'] == '' && !isset($acted['videoreview']['title'])) { ?>
     <div class="add-video-review-container" style="margin-top: 15px;">
-      <h1 id="arbo-review"><input href="/arbo/ajax/widget/<?php echo $object->id; ?>" type="submit" class="form-submit rounded-corners use-ajax" value="<?php echo t('Make your own videoreview'); ?>" /></h1>
+      <input href="/arbo/ajax/widget/<?php echo $object->id; ?>" type="submit" class="form-submit rounded-corners use-ajax" value="<?php echo t('Make your own videoreview'); ?>" />
     </div>
     <?php } ?>
   </center>
