@@ -1,7 +1,7 @@
 name = ARBO module
 description = Addon module to ding_voxb making users able to create video reviews.
 package = Ding!
-version = "7.x-1.1"
+version = "7.x-1.2"
 core = 7.x
 
 configure = admin/config/ding/arbo

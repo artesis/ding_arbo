@@ -2,7 +2,7 @@ ARBO module
 ==========
 This module provides capability for the user to video review an item in Ding! through the VoxB service.
 
-This module is dependent of the VoxB module ([ding_voxb_d7] [ding_voxb]).
+This module is dependent of the VoxB module ([ding_voxb] [ding_voxb]).
 
 Installation
 -----------------
@@ -16,4 +16,4 @@ Improvements
 * Integrate the possibility of logging requests.
 * Refactoring of CSS class names to not use camelCase.
 
-[ding_voxb]: http://github.com/inleadmedia/ding_voxb_d7
+[ding_voxb]: http://github.com/ding2/ding_voxb

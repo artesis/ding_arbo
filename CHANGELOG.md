@@ -1,6 +1,12 @@
 ARBO module
 ==========
 
+### Version 1.2:
+
+* Enhancement: Refactored CSS class names to not use camelCase.
+* Enhancement: Refactored the JavaScript to the behavior of drupal.js.
+* Enhancement: Major template changes - sending HTML through AJAX.
+
 ### Version 1.1:
 
 * Enhancement: Divided CSS blocks from each other.
